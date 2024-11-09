@@ -21,9 +21,16 @@ class Mika:
         self.collider = CircleCollider(self, Vector2(0, 0), 30)
         
         self.speed = 0.5
+        self.current_level = 1
+        self.weapon_level = [0,0,0,0] # Bullet Fireball Lightning Bat
+        self.cooldown = [[750,500,250],[3000,3000,3000],[5000,3000,3000],[3000,3000,3000]] # Bullet Fireball Lightning Bat
+        self.bullet_cooldown = 0
+        self.fireball_cooldown = 0
+        self.lightning_cooldown = 0
+        self.bat_cooldown = 0
         self.health = 100
         self.exp = 0
-        self.current_level = 1
+        
 
         self.bullet_available = True
         self.bullet_cooldown = 0
@@ -54,6 +61,10 @@ class Mika:
             if self.bullet_cooldown == 0:
                 if hog_closest != None:
                     position = self.collider.position.copy()
+        
+        if self.bullet_cooldown == 0:
+            if hog_closest != None:
+                position = self.collider.position.copy()
 
                     b = Bullet(
                         position,
@@ -79,6 +90,15 @@ class Mika:
     def try_level_up(self, get_exp_value: int, space: PartitionedSpace, orb_set: set[Drop]):
         self.exp += get_exp_value
 
+        if self.fireball_cooldown == 0:
+                position = self.collider.position.copy()
+                f = Fireball(position)
+                bullets.add(f)
+                space.add(f.collider)
+                self.fireball_cooldown = self.cooldown[1][self.weapon_level[1]]
+        else:
+            self.fireball_cooldown -= 1
+        
         if self.level_exp[self.current_level-1] <= self.exp:
             self.current_level += 1
             self.exp = 0
