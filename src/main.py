@@ -1,6 +1,8 @@
 import pygame
 from pygame.locals import *
  
+import mika
+
 class App:
     def __init__(self):
         self._running = True
@@ -11,14 +13,20 @@ class App:
         pygame.init()
         self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
+        self._mika = mika.Mika()
  
     def on_event(self, event):
         if event.type == pygame.QUIT:
             self._running = False
     def on_loop(self):
-        pass
+        self._mika.update()
+
     def on_render(self):
-        pass
+        self._display_surf.fill((255, 255, 255))
+        self._mika.draw(self._display_surf)
+        pygame.display.update()
+
+
     def on_cleanup(self):
         pygame.quit()
  
