@@ -5,7 +5,7 @@ from mika import Mika
 from bullet import Bullet
 from hog import Hog
 from constants import *
-import hog
+from hog import Hog
 from collider import PartitionedSpace
 
 class App:
@@ -63,9 +63,9 @@ class App:
 
         ## updates
         self._mika.update(self.bullets, self.space)
-            if got_hit != None:
-                if type(got_hit.object) is Hog:
-                    got_hit.object.hit(100)
+        if got_hit != None:
+            if type(got_hit.object) is Hog:
+                got_hit.object.hit(100)
                     
         if len(self._hog_list) > 0:
             self._decomposition = pygame.math.Vector2.magnitude(self._hog_list[0].collider.position - self._mika.position)
