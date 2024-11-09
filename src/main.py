@@ -62,13 +62,17 @@ class App:
                 self._mika.hit(c.object.attack())
 
         ## updates
-        if len(self._hog_list) > 0:
-            self._decomposition = Vector2.magnitude(self._hog_list[0].collider.position - self._mika.position)
-            for h in self._hog_list:
-                if Vector2.magnitude(h.collider.position - self._mika.position) < self._decomposition:
-                    self._hog_num = self._hog_list.index[h]
-        else:
-            self._mika.update(self.bullets, self.space)
+        min_distance = 999999
+        closest_hog = None
+
+        for h in self._hog_list:
+            d = Vector2.magnitude(h.collider.position - self._mika.collider.position)
+            if d < min_distance:
+                min_distance = d
+                closest_hog = h
+
+        self._mika.update(self.bullets, self.space, closest_hog)
+    
         [b.update(self.space) for b in self.bullets]
         [h.update(self.space) for h in self._hog_list]
 
