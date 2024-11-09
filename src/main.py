@@ -31,7 +31,7 @@ class App:
             self._running = False
 
         if event.type == 0:
-            h = hog.Hedgehog(self._mika.position)
+            h = Hog(self._mika.position)
             self._hog_list.append(h)
             self.space.add(h.collider)
             
@@ -40,7 +40,7 @@ class App:
             got_hit = self.space.do_collide(b.collider)
             # print(got_hit)
             if got_hit != None:
-                if type(got_hit.object) is hog.Hedgehog:
+                if type(got_hit.object) is Hog:
                     got_hit.object.hit(100)
 
         self._mika.update(self.bullets, self.space)
