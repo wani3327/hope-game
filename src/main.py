@@ -4,7 +4,7 @@ from pygame.locals import *
 from mika import Mika
 from bullet import Bullet
 from constants import *
-import hedgehog
+import hog
 from collider import PartitionedSpace
 
 class App:
@@ -21,7 +21,7 @@ class App:
         self._mika = Mika()
         self._mika2 = Mika()
         self.bullets: list[Bullet] = [] 
-        self._hedgehog_list = []
+        self._hog_list = []
         self.space = PartitionedSpace()
         pygame.time.set_timer(0, 1000)
  
@@ -30,7 +30,7 @@ class App:
             self._running = False
 
         if event.type == 0:
-            h = hedgehog.Hedgehog()
+            h = hog.Hedgehog(self._mika.position)
             self._hedgehog_list.append(h)
             self.space.add(h.collider)
             
@@ -45,7 +45,7 @@ class App:
         self._mika.update(self.bullets, self.space)
         [b.update(self.space) for b in self.bullets]
         self._camera = self._mika.position.copy()
-        for i in self._hedgehog_list:
+        for i in self._hog_list:
             i.update()
 
         if pygame.key.get_pressed()[K_ESCAPE]:
@@ -57,7 +57,7 @@ class App:
         self._mika2.draw(self._display_surf, self._camera)
         # print(len(self.bullets))
         [b.draw(self._display_surf, self._camera) for b in self.bullets]
-        for i in self._hedgehog_list:
+        for i in self._hog_list:
             i.draw(self._display_surf, self._camera)
         pygame.display.update()
 
