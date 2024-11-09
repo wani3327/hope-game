@@ -37,11 +37,11 @@ class App:
             
     def on_loop(self): # 판정 결과 반영, 틱 이후 진행
         for b in self.bullets:
-            got_hit = self.space.do_collide(b.collider)
+            got_hits = self.space.do_collide(b.collider)
             # print(got_hit)
-            if got_hit != None:
-                if type(got_hit.object) is Hog:
-                    got_hit.object.hit(100)
+            for c in got_hits:
+                if type(c.object) is Hog:
+                    c.object.hit(100)
 
         self._mika.update(self.bullets, self.space)
         [b.update(self.space) for b in self.bullets]
