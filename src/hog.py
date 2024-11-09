@@ -47,9 +47,9 @@ class Hog:
             self.cooldown = 0
             self.power = 1
 
-        self.image = pygame.transform.scale(self.image, (self.image.get_width()//50, self.image.get_height()//50))
+        self.image = pygame.transform.scale(self.image, (self.image.get_width()//20, self.image.get_height()//20))
         self.size = Vector2(self.image.get_width(), self.image.get_height())
-        pos = Vector2(random.randint(0,600), random.randint(0, 300))
+        pos = Vector2(random.randint(0, 600), random.randint(0, 300))
         self.collider = CircleCollider(self, pos, 20)
         self.mika_position = mika_position
             
