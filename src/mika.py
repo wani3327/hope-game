@@ -48,7 +48,7 @@ class Mika:
                 b = Fireball(position)
                 bullets.append(b)
                 space.add(b.collider)
-                self.cooldown = 60
+                self.cooldown = 750
         else:
             self.cooldown -= 1
             
