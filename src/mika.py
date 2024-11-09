@@ -15,10 +15,11 @@ class Mika:
         self.image = pygame.transform.scale(self.image, 
             (self.image.get_width() // 5, self.image.get_height() // 5))
         self.size = Vector2(self.image.get_width(), self.image.get_height())
-        self.collider = CircleCollider(self, Vector2(0, 0), 20)
+        self.collider = CircleCollider(self, Vector2(0, 0), 30)
         self.speed = 0.5
         self.cooldown = 0
         self.health = 100
+        self.exp = 0
 
     def update(self, bullets, space: PartitionedSpace, hog_closest: Hog | None =None):
         pressed_keys = pygame.key.get_pressed()
@@ -52,14 +53,25 @@ class Mika:
     def draw(self, surface, camera: Vector2):
         font = Font(None, 36)
         surface.blit(self.image, get_offset_camera(self.collider.position, camera, self.size))
-        text_obj = font.render(str(self.health), True, (0, 0, 0)) 
-        text_size =  Vector2(*text_obj.get_rect().size)
+        
+        exp_text_obj = font.render(str(self.health), True, (0, 0, 0)) 
+        exp_text_size =  Vector2(*exp_text_obj.get_rect().size)
         surface.blit(
-            text_obj, 
+            exp_text_obj, 
             get_offset_camera(
                 self.collider.position + Vector2(0, 100),
                 camera,
-                text_size
+                exp_text_size
+        ))
+
+        exp_text_obj = font.render(str(self.exp), True, (0, 0, 0)) 
+        exp_text_size = Vector2(*exp_text_obj.get_rect().size)
+        surface.blit(
+            exp_text_obj,
+            get_offset_camera(
+                self.collider.position + Vector2(0, 150),
+                camera,
+                exp_text_size
         ))
 
     def hit(self, amount: float) -> None:
