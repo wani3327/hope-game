@@ -6,7 +6,7 @@ from bullet import *
 from hog import Hog
 from constants import *
 from collider import PartitionedSpace
-from orb import ExpOrb
+from orb import *
 
 class App:
     def __init__(self):
@@ -31,7 +31,7 @@ class App:
         
         self.bullets: set[Bullet] = set() 
         self._hog_list: set[Hog] = set()
-        self._orb_list: set[ExpOrb] = set()
+        self._orb_list: set[Drop] = set()
 
         self.explosion_effects: list[(Vector2, int)] = []
 
@@ -65,8 +65,13 @@ class App:
             if type(c.object) is Hog:
                 self._mika.hit(c.object.attack())
             
-            if type(c.object) is ExpOrb:
-                self._mika.exp += c.object.value
+            if isinstance(c.object, Drop):
+                if type(c.object) is ExpOrb:
+                    self._mika.exp += c.object.value
+
+                elif type(c.object) is Item:
+                    pass
+
                 self._orb_list.remove(c.object)
                 self.space.remove(c)
 
