@@ -14,7 +14,7 @@ class PartitionedSpace:
 
     @staticmethod
     def _find_key(vec: Vector2):
-        return (int(vec.x) // 50, int(vec.y) // 50)
+        return (int(vec.x) // 100, int(vec.y) // 100)
 
     def add(self, collider: Collider):
         key = self._find_key(collider.position)

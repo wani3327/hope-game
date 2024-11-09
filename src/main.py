@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
- 
+
 from mika import Mika
 from bullet import *
 from hog import Hog
@@ -29,9 +29,11 @@ class App:
         self.space.add(self._mika.collider)
         self._mika2 = Mika()
         
-        self.bullets: list[Bullet] = [] 
-        self._hog_list: list[Hog] = []
-        self._orb_list: list[ExpOrb] = []
+        self.bullets: set[Bullet] = set() 
+        self._hog_list: set[Hog] = set()
+        self._orb_list: set[ExpOrb] = set()
+
+        self.explosion_effects: list[(Vector2, int)] = []
 
         # misc
         pygame.time.set_timer(0, 500) # Hog 생성
@@ -42,7 +44,7 @@ class App:
 
         if event.type == 0:
             h = Hog(self._mika.current_level, self._mika.collider.position)
-            self._hog_list.append(h)
+            self._hog_list.add(h)
             self.space.add(h.collider)
             
     def on_loop(self): # 판정 결과 반영, 틱 이후 진행
@@ -97,6 +99,7 @@ class App:
             if type(d) is Fireball:
                 c = CircleCollider(None, d.collider.position, 100)
                 in_explosion = self.space.do_collide(c)
+                self.explosion_effects.append((d.collider.position, 60))
 
                 for entity in in_explosion:
                     if type(entity.object) is Hog:
@@ -123,7 +126,7 @@ class App:
 
         # drop orb
         orb = ExpOrb(hog.collider.position, 3)
-        self._orb_list.append(orb)
+        self._orb_list.add(orb)
         self.space.add(orb.collider)
 
 
@@ -135,6 +138,18 @@ class App:
         [b.draw(self._display_surf, self._camera) for b in self.bullets]
         [h.draw(self._display_surf, self._camera) for h in self._hog_list]
         [e.draw(self._display_surf, self._camera) for e in self._orb_list]
+
+        ne = []
+        for pos, time in self.explosion_effects:
+            if time != 0:
+                ne.append((pos, time - 1))
+            pygame.draw.circle(
+                self._display_surf, 
+                (255, 0, 0), 
+                pos - self._mika.collider.position + SCREEN_CENTER, 
+                100)
+        self.explosion_effects = ne
+
         pygame.display.update()
 
 
