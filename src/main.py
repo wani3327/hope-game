@@ -47,7 +47,7 @@ class App:
             self.space.add(h.collider)
             
     def on_loop(self): # 판정 결과 반영, 틱 이후 진행
-        
+        dying_bullet = set()
         ## physics
         for b in self.bullets:
             got_hits = self.space.do_collide(b.collider)
@@ -59,6 +59,7 @@ class App:
                         # remove hog
                         self._hog_list.remove(c.object)
                         self.space.remove(c)
+                        dying_bullet.add(b)
 
                         # drop orb
                         orb = ExpOrb(c.position, 3)
@@ -70,6 +71,11 @@ class App:
         for c in collides_with_mika:
             if type(c.object) is Hog:
                 self._mika.hit(c.object.attack())
+            
+            if type(c.object) is ExpOrb:
+                self._mika.exp += c.object.value
+                self._orb_list.remove(c.object)
+                self.space.remove(c)
 
         ## updates
         ### mika
@@ -83,21 +89,23 @@ class App:
                 closest_hog = h
 
         self._mika.update(self.bullets, self.space, closest_hog)
-        print(len(self.bullets))
+
         ### bullet    
-        to_die: list[Bullet] = []
         for b in self.bullets:
             b.update(self.space)
 
             if b.lifetime == 0:
-                to_die.append(b)
-
-        for d in to_die:
-            self.bullets.remove(d)
-            self.space.remove(d.collider)
+                dying_bullet.add(b)
 
         ### hogs
         [h.update(self.space) for h in self._hog_list]
+
+
+        ### handle corpse
+        for d in dying_bullet:
+            self.bullets.remove(d)
+            self.space.remove(d.collider)
+
 
         self._camera = self._mika.collider.position.copy() # camera follows plater.
 
