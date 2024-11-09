@@ -77,7 +77,7 @@ class Mika:
         
     def try_level_up(self, get_exp_value: int, space: PartitionedSpace, orb_set: set[Drop]):
         self.exp += get_exp_value
-
+        
         if self.level_exp[self.current_level-1] <= self.exp:
             self.current_level += 1
             self.exp = 0
