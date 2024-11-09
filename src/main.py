@@ -96,7 +96,7 @@ class App:
         ### handle corpse
         for d in dying_bullet:
             if type(d) is Fireball:
-                c = CircleCollider(None, d.collider.position, 60)
+                c = CircleCollider(None, d.collider.position, 100)
                 in_explosion = self.space.do_collide(c)
 
                 for entity in in_explosion:
