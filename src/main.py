@@ -23,6 +23,7 @@ class App:
         # game status
         self._camera = Vector2(0, 0)
         self.space = PartitionedSpace()
+        self.current_level = 0
 
         # objects
         self._mika = Mika()
@@ -34,14 +35,14 @@ class App:
         self._orb_list: list[ExpOrb] = []
 
         # misc
-        pygame.time.set_timer(0, 1000) # Hog 생성
+        pygame.time.set_timer(0, 100) # Hog 생성
  
     def on_event(self, event): # 판정
         if event.type == pygame.QUIT:
             self._running = False
 
         if event.type == 0:
-            h = Hog(self._mika.collider.position)
+            h = Hog(self.current_level, self._mika.collider.position)
             self._hog_list.append(h)
             self.space.add(h.collider)
             
