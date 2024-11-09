@@ -5,7 +5,7 @@ from mika import Mika
 from bullet import Bullet
 from hog import Hog
 from constants import *
-import hog
+from hog import Hog
 from collider import PartitionedSpace
 
 class App:
