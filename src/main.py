@@ -23,7 +23,6 @@ class App:
         # game status
         self._camera = Vector2(0, 0)
         self.space = PartitionedSpace()
-        self.current_level = 5
 
         # objects
         self._mika = Mika()
@@ -42,7 +41,7 @@ class App:
             self._running = False
 
         if event.type == 0:
-            h = Hog(self.current_level, self._mika.collider.position)
+            h = Hog(self._mika.current_level, self._mika.collider.position)
             self._hog_list.append(h)
             self.space.add(h.collider)
             
@@ -98,7 +97,7 @@ class App:
                 dying_bullet.add(b)
 
         ### hogs
-        [h.update(self.space) for h in self._hog_list]
+        [h.update(self._mika.collider.position, self.space) for h in self._hog_list]
 
 
         ### handle corpse

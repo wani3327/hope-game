@@ -27,7 +27,6 @@ class Hog:
     }
     def __init__(self, level, mika_position):
         type = random.choices([0,1,2], weights=self.Hog_percentage[level])
-        print(type)
         if type == [0]:
             self.image = pygame.image.load(r'resources\hog.png')
             self.speed = 0.2
@@ -55,9 +54,9 @@ class Hog:
             
             # status
             
-    def update(self, space: PartitionedSpace):
+    def update(self, mika_currentposition, space: PartitionedSpace):
         space.move(self.collider, 
-            self.collider.position + self.speed * Vector2.normalize(self.mika_position - self.collider.position)
+            self.collider.position + self.speed * Vector2.normalize(mika_currentposition - self.collider.position)
         )
 
         if self.cooldown != 0:

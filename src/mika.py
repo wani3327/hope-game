@@ -10,6 +10,8 @@ from hog import Hog
 BULLET_COOLDOWN = 300
 
 class Mika:
+    level_exp = [6,10,16,23,25,29,30,32,35,38,41,44,47,51]
+    
     def __init__(self):
         self.image = pygame.image.load(r'resources\mika.png')
         self.image = pygame.transform.scale(self.image, 
@@ -20,6 +22,7 @@ class Mika:
         self.cooldown = 0
         self.health = 100
         self.exp = 0
+        self.current_level = 1
 
     def update(self, bullets, space: PartitionedSpace, hog_closest: Hog | None =None):
         pressed_keys = pygame.key.get_pressed()
@@ -47,6 +50,10 @@ class Mika:
                 self.cooldown = 750
         else:
             self.cooldown -= 1
+        
+        if self.level_exp[self.current_level-1] <= self.exp:
+            self.current_level += 1
+            self.exp = 0
             
 
  
