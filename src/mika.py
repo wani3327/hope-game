@@ -53,7 +53,7 @@ class Mika:
                 b = Bullet(
                     position,
                     (hog_closest.collider.position - self.collider.position).normalize())
-                bullets.append(b)
+                bullets.add(b)
                 space.add(b.collider)
                 self.bullet_cooldown = self.cooldown[0][self.weapon_level[0]]
         else:
@@ -62,7 +62,7 @@ class Mika:
         if self.fireball_cooldown == 0:
                 position = self.collider.position.copy()
                 f = Fireball(position)
-                bullets.append(f)
+                bullets.add(f)
                 space.add(f.collider)
                 self.fireball_cooldown = self.cooldown[1][self.weapon_level[1]]
         else:
