@@ -4,7 +4,7 @@ from pygame.locals import *
 from mika import Mika
 from bullet import Bullet
 from constants import *
-import hedgehog
+import hog
 
 class App:
     def __init__(self):
@@ -20,7 +20,7 @@ class App:
         self._mika = Mika()
         self._mika2 = Mika()
         self.bullets: list[Bullet] = [] 
-        self._hedgehog_list = []
+        self._hog_list = []
         pygame.time.set_timer(0, 1000)
  
     def on_event(self, event): # 판정
@@ -28,13 +28,13 @@ class App:
             self._running = False
 
         if event.type == 0:
-            self._hedgehog_list.append(hedgehog.Hedgehog())
+            self._hog_list.append(hog.Hog(self._mika.position))
             
     def on_loop(self): # 판정 결과 반영, 틱 이후 진행
         self._mika.update(self.bullets)
         [b.update() for b in self.bullets]
         self._camera = self._mika.position.copy()
-        for i in self._hedgehog_list:
+        for i in self._hog_list:
             i.update()
 
     def on_render(self): # 진행 렌더
@@ -43,7 +43,7 @@ class App:
         self._mika2.draw(self._display_surf, self._camera)
         # print(len(self.bullets))
         [b.draw(self._display_surf, self._camera) for b in self.bullets]
-        for i in self._hedgehog_list:
+        for i in self._hog_list:
             i.draw(self._display_surf, self._camera)
         pygame.display.update()
 
