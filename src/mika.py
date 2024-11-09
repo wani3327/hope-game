@@ -34,7 +34,7 @@ class Mika:
         self.bullet_cooldown = 0
         self.fireball_cooldown = 0
 
-    def update(self, bullets: set[Bullet], hog_closest: Hog | None = None):
+    def update(self, bullets: set[Bullet], hog_list:set[Hog]):
         pressed_keys = pygame.key.get_pressed()
         movement = Vector2(0, 0)
 
@@ -48,15 +48,22 @@ class Mika:
             movement = Vector2(self.speed, 0)
         
         self.collider.position += movement
-        
 
+        closest_hog = None
+        min_distance = 999999
+        for h in hog_list:
+            d = Vector2.magnitude(h.collider.position - self.collider.position)
+            if d < min_distance:
+                min_distance = d
+            closest_hog = h
+        
         if self.weapon_level[0] >= 0:    
             if self.bullet_cooldown == 0:
-                if hog_closest != None:
+                if closest_hog != None:
                     position = self.collider.position.copy()
                     b = Bullet(
                         position,
-                        (hog_closest.collider.position - self.collider.position).normalize())
+                        (closest_hog.collider.position - self.collider.position).normalize())
                     bullets.add(b)
                     self.bullet_cooldown = 750
             else:
@@ -71,6 +78,9 @@ class Mika:
             else:
                 self.fireball_cooldown -= 1
     
+        if self.weapon_level[2] >= 0:
+            if self.lightning_cooldown == 0:
+                pass
         
         
         
