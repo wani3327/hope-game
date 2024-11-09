@@ -45,8 +45,8 @@ class Mika:
                 position = self.collider.position.copy()
 
                 # b = Bullet(
-                #     position,
-                #     (hog_closest.collider.position - self.collider.position).normalize())
+                    # position,
+                    # (hog_closest.collider.position - self.collider.position).normalize())
 
                 b = Fireball(position)
                 bullets.add(b)
