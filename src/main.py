@@ -42,12 +42,18 @@ class App:
             if got_hit != None:
                 if type(got_hit.object) is Hog:
                     got_hit.object.hit(100)
-
-        self._mika.update(self.bullets, self.space)
+                    
+        if len(self._hog_list) > 0:
+            self._decomposition = pygame.math.Vector2.magnitude(self._hog_list[0].collider.position - self._mika.position)
+            for h in self._hog_list:
+                if pygame.math.Vector2.magnitude(h.collider.position - self._mika.position) < self._decomposition:
+                    self._hog_num = self._hog_list.index[h]
+        else:
+            self._mika.update(self.bullets, self.space)
+        
         [b.update(self.space) for b in self.bullets]
+        [h.update(self.space) for h in self._hog_list]
         self._camera = self._mika.position.copy()
-        for i in self._hog_list:
-            i.update(self.space)
 
         if pygame.key.get_pressed()[K_ESCAPE]:
             self._running = False

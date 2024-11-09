@@ -14,9 +14,8 @@ class Mika:
         self.speed = 0.5
         self.cooldown = 0
 
-    def update(self, bullets, space):
+    def update(self, bullets, space, hog_closest=None):
         pressed_keys = pygame.key.get_pressed()
-        mouse_pos = Vector2(*pygame.mouse.get_pos())
 
         if pressed_keys[K_UP]:
             self.position += Vector2(0, -self.speed)
@@ -27,17 +26,17 @@ class Mika:
         if pressed_keys[K_RIGHT]:
             self.position += Vector2(self.speed, 0)
         
-        if pressed_keys[K_SPACE]:
-            if self.cooldown == 0:
-
+        
+        if self.cooldown == 0:
+            if hog_closest != None:
                 b = bullet.Bullet(
                         self.position.copy(), 
-                        (mouse_pos - SCREEN_CENTER).normalize())
+                        (hog_closest.collider.position - SCREEN_CENTER).normalize())
                 bullets.append(b)
                 space.add(b.collider)
                 self.cooldown = 60
-            else:
-                self.cooldown -= 1
+        else:
+            self.cooldown -= 1
             
 
  
