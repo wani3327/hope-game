@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 from helper import *
 from pygame.math import Vector2
-import bullet
+from bullet import *
 from collider import *
 from constants import *
 from hog import Hog
@@ -39,9 +39,13 @@ class Mika:
         
         if self.cooldown == 0:
             if hog_closest != None:
-                b = bullet.Bullet(
-                        self.collider.position.copy(), 
-                        (hog_closest.collider.position - self.collider.position).normalize())
+                position = self.collider.position.copy()
+
+                # b = Bullet(
+                #     position,
+                #     (hog_closest.collider.position - self.collider.position).normalize())
+
+                b = Fireball(position)
                 bullets.append(b)
                 space.add(b.collider)
                 self.cooldown = 60
