@@ -19,7 +19,8 @@ class Mika:
         self.size = Vector2(self.image.get_width(), self.image.get_height())
         self.collider = CircleCollider(self, Vector2(0, 0), 30)
         self.speed = 0.5
-        self.cooldown = 0
+        self.bullet_cooldown = 0
+        self.fireball_cooldown = 0
         self.health = 100
         self.exp = 0
         self.current_level = 1
@@ -39,21 +40,28 @@ class Mika:
         
         space.move(self.collider,
                    self.collider.position + movement)
-        
-        if self.cooldown == 0:
+            
+        if self.bullet_cooldown == 0:
             if hog_closest != None:
                 position = self.collider.position.copy()
 
-                # b = Bullet(
-                    # position,
-                    # (hog_closest.collider.position - self.collider.position).normalize())
-
-                b = Fireball(position)
+                b = Bullet(
+                    position,
+                    (hog_closest.collider.position - self.collider.position).normalize())
                 bullets.add(b)
                 space.add(b.collider)
-                self.cooldown = 750
+                self.bullet_cooldown = 750
         else:
-            self.cooldown -= 1
+            self.bullet_cooldown -= 1
+        
+        if self.fireball_cooldown == 0:
+                position = self.collider.position.copy()
+                f = Fireball(position)
+                bullets.add(f)
+                space.add(f.collider)
+                self.fireball_cooldown = 750
+        else:
+            self.fireball_cooldown -= 1
         
         if self.level_exp[self.current_level-1] <= self.exp:
             self.current_level += 1
