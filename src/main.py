@@ -5,6 +5,7 @@ from mika import Mika
 from bullet import Bullet
 from constants import *
 import hedgehog
+from collider import PartitionedSpace
 
 class App:
     def __init__(self):
@@ -21,6 +22,7 @@ class App:
         self._mika2 = Mika()
         self.bullets: list[Bullet] = [] 
         self._hedgehog_list = []
+        self.space = PartitionedSpace()
         pygame.time.set_timer(0, 1000)
  
     def on_event(self, event): # 판정
@@ -28,14 +30,26 @@ class App:
             self._running = False
 
         if event.type == 0:
-            self._hedgehog_list.append(hedgehog.Hedgehog())
+            h = hedgehog.Hedgehog()
+            self._hedgehog_list.append(h)
+            self.space.add(h.collider)
             
     def on_loop(self): # 판정 결과 반영, 틱 이후 진행
-        self._mika.update(self.bullets)
-        [b.update() for b in self.bullets]
+        for b in self.bullets:
+            got_hit = self.space.do_collide(b.collider)
+            # print(got_hit)
+            if got_hit != None:
+                if type(got_hit.object) is hedgehog.Hedgehog:
+                    got_hit.object.hit(100)
+
+        self._mika.update(self.bullets, self.space)
+        [b.update(self.space) for b in self.bullets]
         self._camera = self._mika.position.copy()
         for i in self._hedgehog_list:
             i.update()
+
+        if pygame.key.get_pressed()[K_ESCAPE]:
+            self._running = False
 
     def on_render(self): # 진행 렌더
         self._display_surf.fill((255, 255, 255))
