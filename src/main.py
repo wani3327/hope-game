@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
  
 from mika import Mika
-from bullet import Bullet
+from bullet import *
 from hog import Hog
 from constants import *
 from collider import PartitionedSpace
@@ -46,7 +46,7 @@ class App:
             self.space.add(h.collider)
             
     def on_loop(self): # 판정 결과 반영, 틱 이후 진행
-        dying_bullet = set()
+        dying_bullet: set[Bullet] = set()
         ## physics
         for b in self.bullets:
             got_hits = self.space.do_collide(b.collider)
@@ -55,15 +55,7 @@ class App:
                 if type(c.object) is Hog:
 
                     if c.object.hit(100): # it died
-                        # remove hog
-                        self._hog_list.remove(c.object)
-                        self.space.remove(c)
-                        dying_bullet.add(b)
-
-                        # drop orb
-                        orb = ExpOrb(c.position, 3)
-                        self._orb_list.append(orb)
-                        self.space.add(orb.collider)
+                        self._kill_hog(c.object, b, dying_bullet)
                         
         
         collides_with_mika = self.space.do_collide(self._mika.collider)
@@ -102,6 +94,16 @@ class App:
 
         ### handle corpse
         for d in dying_bullet:
+            if type(d) is Fireball:
+                c = CircleCollider(None, d.collider.position, 100)
+                in_explosion = self.space.do_collide(c)
+
+                for entity in in_explosion:
+                    if type(entity.object) is Hog:
+                        if entity.object.hit(11):
+                            self._kill_hog(entity.object, b, None)
+
+
             self.bullets.remove(d)
             self.space.remove(d.collider)
 
@@ -110,6 +112,20 @@ class App:
 
         if pygame.key.get_pressed()[K_ESCAPE]: # game terminates
             self._running = False
+
+    def _kill_hog(self, hog: Hog, bullet: Bullet, dying_bullet: set[Bullet] | None):
+        # remove hog
+        self._hog_list.remove(hog)
+        self.space.remove(hog.collider)
+
+        if dying_bullet != None:
+            dying_bullet.add(bullet)
+
+        # drop orb
+        orb = ExpOrb(hog.collider.position, 3)
+        self._orb_list.append(orb)
+        self.space.add(orb.collider)
+
 
     def on_render(self): # 진행 렌더
         self._display_surf.fill((255, 255, 255))
