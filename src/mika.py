@@ -19,11 +19,16 @@ class Mika:
         self.size = Vector2(self.image.get_width(), self.image.get_height())
         self.collider = CircleCollider(self, Vector2(0, 0), 30)
         self.speed = 0.5
+        self.current_level = 1
+        self.weapon_level = [0,0,0,0] # Bullet Fireball Lightning Bat
+        self.cooldown = [[750,500,250],[3000,3000,3000],[5000,3000,3000],[3000,3000,3000]] # Bullet Fireball Lightning Bat
         self.bullet_cooldown = 0
         self.fireball_cooldown = 0
+        self.lightning_cooldown = 0
+        self.bat_cooldown = 0
         self.health = 100
         self.exp = 0
-        self.current_level = 1
+        
 
     def update(self, bullets, space: PartitionedSpace, hog_closest: Hog | None =None):
         pressed_keys = pygame.key.get_pressed()
@@ -40,7 +45,7 @@ class Mika:
         
         space.move(self.collider,
                    self.collider.position + movement)
-            
+        
         if self.bullet_cooldown == 0:
             if hog_closest != None:
                 position = self.collider.position.copy()
@@ -50,7 +55,7 @@ class Mika:
                     (hog_closest.collider.position - self.collider.position).normalize())
                 bullets.append(b)
                 space.add(b.collider)
-                self.bullet_cooldown = 750
+                self.bullet_cooldown = self.cooldown[0][self.weapon_level[0]]
         else:
             self.bullet_cooldown -= 1
         
@@ -59,7 +64,7 @@ class Mika:
                 f = Fireball(position)
                 bullets.append(f)
                 space.add(f.collider)
-                self.fireball_cooldown = 750
+                self.fireball_cooldown = self.cooldown[1][self.weapon_level[1]]
         else:
             self.fireball_cooldown -= 1
         

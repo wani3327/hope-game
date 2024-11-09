@@ -53,7 +53,6 @@ class App:
 
             for c in got_hits:
                 if type(c.object) is Hog:
-
                     if c.object.hit(100): # it died
                         self._kill_hog(c.object, b, dying_bullet)
                         
