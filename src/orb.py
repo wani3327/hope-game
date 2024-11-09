@@ -31,7 +31,9 @@ class Item(Drop):
         elif value == 'fireball':
             path = 'fireball'
             scale = 5
-
+        elif value == 'lightning':
+            path = 'lightning'
+            scale = 50
 
         self.image = pygame.image.load(fr'resources\{path}.png')
         self.image = pygame.transform.scale(self.image, 
