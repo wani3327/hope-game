@@ -71,6 +71,7 @@ class App:
                 self._mika.hit(c.object.attack())
 
         ## updates
+        ### mika
         min_distance = 999999
         closest_hog = None
 
@@ -81,8 +82,20 @@ class App:
                 closest_hog = h
 
         self._mika.update(self.bullets, self.space, closest_hog)
-    
-        [b.update(self.space) for b in self.bullets]
+        print(len(self.bullets))
+        ### bullet    
+        to_die: list[Bullet] = []
+        for b in self.bullets:
+            b.update(self.space)
+
+            if b.lifetime == 0:
+                to_die.append(b)
+
+        for d in to_die:
+            self.bullets.remove(d)
+            self.space.remove(d.collider)
+
+        ### hogs
         [h.update(self.space) for h in self._hog_list]
 
         self._camera = self._mika.collider.position.copy() # camera follows plater.

@@ -14,9 +14,15 @@ class Bullet:
         self.direction = direction
         self.speed = 5
         self.collider = CircleCollider(self, initial_position, 10)
+        self.lifetime = 300
     
     def update(self, space: PartitionedSpace):
         space.move(self.collider, self.collider.position + self.speed * self.direction)
+        self.lifetime -= 1
+
+        if self.lifetime == 0:
+            # we will take care of this situation in App
+            pass
 
     def draw(self, surface, camera: Vector2):
         surface.blit(self.image, get_offset_camera(self.collider.position, camera, self.size))
