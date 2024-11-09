@@ -16,14 +16,23 @@ class App:
  
     def on_init(self):
         pygame.init()
+        # application
         self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
-        self._camera = pygame.Rect(0, 0, 0, 0)
+
+        # game status
+        self._camera = Vector2(0, 0)
+        self.space = PartitionedSpace()
+
+        # objects
         self._mika = Mika()
+        self.space.add(self._mika.collider)
         self._mika2 = Mika()
+        
         self.bullets: list[Bullet] = [] 
         self._hog_list: list[Hog] = []
-        self.space = PartitionedSpace()
+
+        # misc
         pygame.time.set_timer(0, 1000) # Hog 생성
  
     def on_event(self, event): # 판정
@@ -31,14 +40,29 @@ class App:
             self._running = False
 
         if event.type == 0:
-            h = Hog(self._mika.position)
+            h = Hog(self._mika.collider.position)
             self._hog_list.append(h)
             self.space.add(h.collider)
             
     def on_loop(self): # 판정 결과 반영, 틱 이후 진행
+        
+        ## physics
         for b in self.bullets:
-            got_hit = self.space.do_collide(b.collider)
+            got_hits = self.space.do_collide(b.collider)
             # print(got_hit)
+            for c in got_hits:
+                if type(c.object) is Hog:
+                    if c.object.hit(100): # it died
+                        self._hog_list.remove(c.object)
+                        self.space.remove(c)
+        
+        collides_with_mika = self.space.do_collide(self._mika.collider)
+        for c in collides_with_mika:
+            if type(c.object) is Hog:
+                self._mika.hit(c.object.attack())
+
+        ## updates
+        self._mika.update(self.bullets, self.space)
             if got_hit != None:
                 if type(got_hit.object) is Hog:
                     got_hit.object.hit(100)
@@ -52,10 +76,13 @@ class App:
             self._mika.update(self.bullets, self.space)
         
         [b.update(self.space) for b in self.bullets]
-        [h.update(self.space) for h in self._hog_list]
         self._camera = self._mika.position.copy()
+        for i in self._hog_list:
+            i.update(self.space)
 
-        if pygame.key.get_pressed()[K_ESCAPE]:
+        self._camera = self._mika.collider.position.copy() # camera follows plater.
+
+        if pygame.key.get_pressed()[K_ESCAPE]: # game terminates
             self._running = False
 
     def on_render(self): # 진행 렌더

@@ -14,7 +14,7 @@ class PartitionedSpace:
 
     @staticmethod
     def _find_key(vec: Vector2):
-        return (int(vec.x) // 1000, int(vec.y) // 1000)
+        return (int(vec.x) // 50, int(vec.y) // 50)
 
     def add(self, collider: Collider):
         key = self._find_key(collider.position)
@@ -25,24 +25,33 @@ class PartitionedSpace:
     def remove(self, collider: Collider):
         key = self._find_key(collider.position)
         self.map[key].remove(collider)
+        if not self.map[key]:
+            self.map.pop(key)
 
     def move(self, collider: Collider, new_position: Vector2):
         self.remove(collider)
         collider.position = new_position
         self.add(collider)
 
-    def do_collide(self, collider: Collider) -> Collider | None:
-        key = self._find_key(collider.position)
-        if key not in self.map:
-            return None
-        for c in self.map[key]:
-            if collider.do_collide(c):
-                if c is collider:
-                    continue
+    def do_collide(self, collider: Collider) -> list[Collider]:
+        key_x, key_y = self._find_key(collider.position)
+        res = []
 
-                return c
+        for key in [(key_x - 1, key_y + 1), (key_x, key_y + 1), (key_x + 1, key_y + 1),
+                    (key_x - 1, key_y),     (key_x, key_y),     (key_x + 1, key_y),
+                    (key_x - 1, key_y - 1), (key_x, key_y - 1), (key_x + 1, key_y - 1)]:
+
+            if key not in self.map:
+                continue
             
-        return None
+            for c in self.map[key]:
+                if collider.do_collide(c):
+                    if c is collider:
+                        continue
+
+                    res.append(c)
+            
+        return res
 
 
 class CircleCollider(Collider):
