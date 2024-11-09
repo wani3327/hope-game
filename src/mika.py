@@ -40,7 +40,7 @@ class Mika:
             if hog_closest != None:
                 b = bullet.Bullet(
                         self.collider.position.copy(), 
-                        (hog_closest.collider.position - SCREEN_CENTER).normalize())
+                        (hog_closest.collider.position - self.collider.position).normalize())
                 bullets.append(b)
                 space.add(b.collider)
                 self.cooldown = 60
