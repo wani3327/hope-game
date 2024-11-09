@@ -5,6 +5,8 @@ from mika import Mika
 from bullet import Bullet
 from hog import Hog
 from constants import *
+import hog
+from collider import PartitionedSpace
 
 class App:
     def __init__(self):
@@ -21,6 +23,7 @@ class App:
         self._mika2 = Mika()
         self.bullets: list[Bullet] = [] 
         self._hog_list: list[Hog] = []
+        self.space = PartitionedSpace()
         pygame.time.set_timer(0, 1000) # Hog 생성
  
     def on_event(self, event): # 판정
@@ -28,16 +31,26 @@ class App:
             self._running = False
 
         if event.type == 0:
-            self._hog_list.append(Hog(self._mika.position))
-        
-        if event.type == 1:
-            self.bullets.appdend()
+            h = hog.Hedgehog(self._mika.position)
+            self._hog_list.append(h)
+            self.space.add(h.collider)
             
     def on_loop(self): # 판정 결과 반영, 틱 이후 진행
-        self._mika.update(self.bullets)
-        [b.update() for b in self.bullets]
-        [h.update() for h in self._hog_list]
+        for b in self.bullets:
+            got_hit = self.space.do_collide(b.collider)
+            # print(got_hit)
+            if got_hit != None:
+                if type(got_hit.object) is hog.Hedgehog:
+                    got_hit.object.hit(100)
+
+        self._mika.update(self.bullets, self.space)
+        [b.update(self.space) for b in self.bullets]
         self._camera = self._mika.position.copy()
+        for i in self._hog_list:
+            i.update(self.space)
+
+        if pygame.key.get_pressed()[K_ESCAPE]:
+            self._running = False
 
     def on_render(self): # 진행 렌더
         self._display_surf.fill((255, 255, 255))
