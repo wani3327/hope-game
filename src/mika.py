@@ -31,7 +31,6 @@ class Mika:
         self.health = 100
         self.exp = 0
         
-
         self.bullet_available = True
         self.bullet_cooldown = 0
         self.fireball_available = False
@@ -51,37 +50,26 @@ class Mika:
             movement = Vector2(self.speed, 0)
         
         self.collider.position += movement
-        # spaces[0].move(self.collider,
-        #            self.collider.position + movement)
-        # spaces[1].move(self.collider,
-        #            self.collider.position + movement)
         
 
         if self.bullet_available:    
             if self.bullet_cooldown == 0:
                 if hog_closest != None:
                     position = self.collider.position.copy()
-        
-        if self.bullet_cooldown == 0:
-            if hog_closest != None:
-                position = self.collider.position.copy()
-
                     b = Bullet(
                         position,
                         (hog_closest.collider.position - self.collider.position).normalize())
                     bullets.add(b)
-                    # space.add(b.collider)
                     self.bullet_cooldown = 750
             else:
                 self.bullet_cooldown -= 1
         
         if self.fireball_available:
             if self.fireball_cooldown == 0:
-                    position = self.collider.position.copy()
-                    f = Fireball(position)
-                    bullets.add(f)
-                    # space.add(f.collider)
-                    self.fireball_cooldown = 750
+                position = self.collider.position.copy()
+                f = Fireball(position)
+                bullets.add(f)
+                self.fireball_cooldown = 750
             else:
                 self.fireball_cooldown -= 1
         
