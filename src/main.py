@@ -81,16 +81,7 @@ class App:
 
         ## updates
         ### mika
-        min_distance = 999999
-        closest_hog = None
-
-        for h in self._hog_list:
-            d = Vector2.magnitude(h.collider.position - self._mika.collider.position)
-            if d < min_distance:
-                min_distance = d
-                closest_hog = h
-
-        self._mika.update(self.bullets, closest_hog)
+        self._mika.update(self.bullets, self._hog_list)
 
         ### bullet    
         for b in self.bullets:
