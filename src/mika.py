@@ -72,6 +72,7 @@ class Mika:
                 self.fireball_cooldown = 750
             else:
                 self.fireball_cooldown -= 1
+    
         
         
         
