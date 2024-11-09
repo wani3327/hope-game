@@ -22,7 +22,7 @@ class Mika:
         
         self.speed = 0.5
         self.current_level = 1
-        self.weapon_level = [-1, -1, -1, -1] # Bullet Fireball Lightning Bat
+        self.weapon_level = [0, -1, -1, -1] # Bullet Fireball Lightning Bat
         self.cooldown = [[750,500,250],[3000,3000,3000],[5000,3000,3000],[3000,3000,3000]] # Bullet Fireball Lightning Bat
         self.bullet_cooldown = 0
         self.fireball_cooldown = 0
@@ -88,7 +88,13 @@ class Mika:
             space.add(item.collider)
 
     def get_item(self, item: Item):
-        pass
+        if item.value == 'bow' and self.weapon_level[0] < 2:
+            self.weapon_level[0] += 1
+        elif item.value == 'fireball' and self.weapon_level[1] < 2:
+            self.weapon_level[1] += 1
+        elif item.value == 'lightning' and self.weapon_level[2] < 2:
+            self.weapon_level[2] += 1
+
  
     def draw(self, surface, camera: Vector2):
         font = Font(None, 36)
@@ -109,10 +115,21 @@ class Mika:
         surface.blit(
             exp_text_obj,
             get_offset_camera(
-                self.collider.position + Vector2(0, 150),
+                self.collider.position + Vector2(0, 130),
                 camera,
                 exp_text_size
         ))
+
+        item_text_obj = font.render(str(self.weapon_level), True, (0, 0, 0))
+        item_text_size = Vector2(*item_text_obj.get_rect().size)
+        surface.blit(
+            item_text_obj,
+            get_offset_camera(
+                self.collider.position + Vector2(0, 160),
+                camera,
+                item_text_size
+        ))
+
 
     def hit(self, amount: float) -> None:
         self.health -= amount

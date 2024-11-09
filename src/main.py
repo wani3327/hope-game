@@ -74,7 +74,7 @@ class App:
                     self._mika.try_level_up(c.object.value, self.orb_space, self._orb_list)
 
                 elif type(c.object) is Item:
-                    pass
+                    self._mika.get_item(c.object)
 
                 self._orb_list.remove(c.object)
                 self.orb_space.remove(c)
