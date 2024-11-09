@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from helper import *
 from pygame.math import Vector2
+import bullet
 
 class Mika:
     def __init__(self):
@@ -12,8 +13,10 @@ class Mika:
         self.position = Vector2(0, 0)
         self.speed = 0.5
 
-    def update(self):
+    def update(self, bullets):
         pressed_keys = pygame.key.get_pressed()
+        mouse_pos = Vector2(*pygame.mouse.get_pos())
+
         if pressed_keys[K_UP]:
             self.position += Vector2(0, -self.speed)
         if pressed_keys[K_DOWN]:
@@ -22,7 +25,14 @@ class Mika:
             self.position += Vector2(-self.speed, 0)
         if pressed_keys[K_RIGHT]:
             self.position += Vector2(self.speed, 0)
+        
+        if pressed_keys[K_SPACE]:
+            bullets.append(
+                bullet.Bullet(
+                    self.position.copy(), 
+                    (mouse_pos - SCREEN_CENTER).normalize())
+            )
+
  
     def draw(self, surface, camera: Vector2):
-        # print(get_offset_camera(self.rect, camera))
         surface.blit(self.image, get_offset_camera(self.position, camera, self.size))
