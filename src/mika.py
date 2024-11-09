@@ -21,6 +21,7 @@ class Mika:
     def update(self, bullets, space: PartitionedSpace):
         pressed_keys = pygame.key.get_pressed()
         mouse_pos = Vector2(*pygame.mouse.get_pos())
+        movement = Vector2(0, 0)
 
         if pressed_keys[K_UP]:
             movement = Vector2(0, -self.speed)
@@ -37,7 +38,7 @@ class Mika:
             if self.cooldown == 0:
 
                 b = bullet.Bullet(
-                        self.position.copy(), 
+                        self.collider.position.copy(), 
                         (mouse_pos - SCREEN_CENTER).normalize())
                 bullets.append(b)
                 space.add(b.collider)
@@ -48,7 +49,7 @@ class Mika:
 
  
     def draw(self, surface, camera: Vector2):
-        surface.blit(self.image, get_offset_camera(self.position, camera, self.size))
+        surface.blit(self.image, get_offset_camera(self.collider.position, camera, self.size))
 
     def hit(self, amount: float) -> None:
         self.health -= amount

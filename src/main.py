@@ -26,7 +26,7 @@ class App:
 
         # objects
         self._mika = Mika()
-        self.space.add(self._mika)
+        self.space.add(self._mika.collider)
         self._mika2 = Mika()
         
         self.bullets: list[Bullet] = [] 
@@ -40,7 +40,7 @@ class App:
             self._running = False
 
         if event.type == 0:
-            h = Hog(self._mika.position)
+            h = Hog(self._mika.collider.position)
             self._hog_list.append(h)
             self.space.add(h.collider)
             
@@ -52,7 +52,9 @@ class App:
             # print(got_hit)
             for c in got_hits:
                 if type(c.object) is Hog:
-                    c.object.hit(100)
+                    if c.object.hit(100): # it died
+                        self._hog_list.remove(c.object)
+                        self.space.remove(c)
 
         ## updates
         self._mika.update(self.bullets, self.space)
