@@ -34,7 +34,7 @@ class App:
         self._hog_list: list[Hog] = []
 
         # misc
-        pygame.time.set_timer(0, 100) # Hog 생성
+        pygame.time.set_timer(0, 500) # Hog 생성
  
     def on_event(self, event): # 판정
         if event.type == pygame.QUIT:
