@@ -49,16 +49,11 @@ class Mika:
         
         self.collider.position += movement
 
-        closest_hog = None
-        min_distance = 999999
-        for h in hog_list:
-            d = Vector2.magnitude(h.collider.position - self.collider.position)
-            if d < min_distance:
-                min_distance = d
-            closest_hog = h
+        
         
         if self.weapon_level[0] >= 0:    
             if self.bullet_cooldown == 0:
+                closest_hog = self.find_nearest(hog_list)
                 if closest_hog != None:
                     position = self.collider.position.copy()
                     b = Bullet(
@@ -82,7 +77,15 @@ class Mika:
             if self.lightning_cooldown == 0:
                 pass
         
-        
+    def find_nearest(self, hog_list):
+        closest_hog = None
+        min_distance = 999999
+        for h in hog_list:
+            d = Vector2.magnitude(h.collider.position - self.collider.position)
+            if d < min_distance:
+                min_distance = d
+            closest_hog = h
+        return closest_hog
         
     def try_level_up(self, get_exp_value: int, space: PartitionedSpace, orb_set: set[Drop]):
         self.exp += get_exp_value
@@ -91,12 +94,17 @@ class Mika:
             self.current_level += 1
             self.exp = 0
 
+        items = []
         for i in range(3):
             r = random.randint(0, 2)
             v = ['bow', 'fireball', 'lightning'][r]
             item = Item(self.collider.position + Vector2(200 * i - 200, 200), v)
+            items.append(item)
             orb_set.add(item)
             space.add(item.collider)
+
+        for i in items:
+            i.friend = items
 
     def get_item(self, item: Item):
         if item.value == 'bow' and self.weapon_level[0] < 2:

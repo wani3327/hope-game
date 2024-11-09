@@ -25,7 +25,7 @@ class Hog:
         13:[0.1,0.4,0.5],
         14:[0,0.4,0.6]
     }
-    def __init__(self, level, mika_position):
+    def __init__(self, level):
         type = random.choices([0,1,2], weights=self.Hog_percentage[level])
         if type == [0]:
             self.image = pygame.image.load(r'resources\hog.png')
@@ -50,9 +50,6 @@ class Hog:
         self.size = Vector2(self.image.get_width(), self.image.get_height())
         pos = Vector2(random.randint(0, 600), random.randint(0, 300))
         self.collider = CircleCollider(self, pos, 20)
-        self.mika_position = mika_position
-            
-            # status
             
     def update(self, mika_currentposition, space: PartitionedSpace):
         space.move(self.collider, 
