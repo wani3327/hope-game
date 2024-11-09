@@ -22,11 +22,14 @@ class App:
 
         # game status
         self._camera = Vector2(0, 0)
-        self.space = PartitionedSpace()
+        # self.space = PartitionedSpace()
+        self.hog_space = PartitionedSpace()
+        self.orb_space = PartitionedSpace()
 
         # objects
         self._mika = Mika()
-        self.space.add(self._mika.collider)
+        # self.hog_space.add(self._mika.collider)
+        # self.orb_space.add(self._mika.collider)
         self._mika2 = Mika()
         
         self.bullets: set[Bullet] = set() 
@@ -45,13 +48,13 @@ class App:
         if event.type == 0:
             h = Hog(self._mika.current_level, self._mika.collider.position)
             self._hog_list.add(h)
-            self.space.add(h.collider)
+            self.hog_space.add(h.collider)
             
     def on_loop(self): # 판정 결과 반영, 틱 이후 진행
         dying_bullet: set[Bullet] = set()
         ## physics
         for b in self.bullets:
-            got_hits = self.space.do_collide(b.collider)
+            got_hits = self.hog_space.do_collide(b.collider)
 
             for c in got_hits:
                 if type(c.object) is Hog:
@@ -59,20 +62,22 @@ class App:
                         self._kill_hog(c.object, b, dying_bullet)
                         
         
-        collides_with_mika = self.space.do_collide(self._mika.collider)
+        collides_with_mika = self.hog_space.do_collide(self._mika.collider)
         for c in collides_with_mika:
             if type(c.object) is Hog:
                 self._mika.hit(c.object.attack())
-            
+
+        collides_with_mika = self.orb_space.do_collide(self._mika.collider)
+        for c in collides_with_mika:
             if isinstance(c.object, Drop):
                 if type(c.object) is ExpOrb:
-                    self._mika.exp += c.object.value
+                    self._mika.try_level_up(c.object.value, self.orb_space, self._orb_list)
 
                 elif type(c.object) is Item:
                     pass
 
                 self._orb_list.remove(c.object)
-                self.space.remove(c)
+                self.orb_space.remove(c)
 
         ## updates
         ### mika
@@ -85,24 +90,24 @@ class App:
                 min_distance = d
                 closest_hog = h
 
-        self._mika.update(self.bullets, self.space, closest_hog)
+        self._mika.update(self.bullets, [self.hog_space, self.orb_space], closest_hog)
 
         ### bullet    
         for b in self.bullets:
-            b.update(self.space)
+            b.update()
 
             if b.lifetime == 0:
                 dying_bullet.add(b)
 
         ### hogs
-        [h.update(self._mika.collider.position, self.space) for h in self._hog_list]
+        [h.update(self._mika.collider.position, self.hog_space) for h in self._hog_list]
 
 
         ### handle corpse
         for d in dying_bullet:
             if type(d) is Fireball:
                 c = CircleCollider(None, d.collider.position, 100)
-                in_explosion = self.space.do_collide(c)
+                in_explosion = self.hog_space.do_collide(c)
                 self.explosion_effects.append((d.collider.position, 60))
 
                 for entity in in_explosion:
@@ -112,7 +117,7 @@ class App:
 
 
             self.bullets.remove(d)
-            self.space.remove(d.collider)
+            # self.space.remove(d.collider)
 
 
         self._camera = self._mika.collider.position.copy() # camera follows plater.
@@ -123,7 +128,7 @@ class App:
     def _kill_hog(self, hog: Hog, bullet: Bullet, dying_bullet: set[Bullet] | None):
         # remove hog
         self._hog_list.remove(hog)
-        self.space.remove(hog.collider)
+        self.hog_space.remove(hog.collider)
 
         if dying_bullet != None:
             dying_bullet.add(bullet)
@@ -131,7 +136,7 @@ class App:
         # drop orb
         orb = ExpOrb(hog.collider.position, 3)
         self._orb_list.add(orb)
-        self.space.add(orb.collider)
+        self.orb_space.add(orb.collider)
 
 
     def on_render(self): # 진행 렌더
