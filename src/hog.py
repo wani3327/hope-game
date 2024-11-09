@@ -10,12 +10,24 @@ HOG1_ATTACK_COOLDOWN = 15
 
 class Hog:
     Hog_percentage = {
-        1:(100,0,0),
-        2:(90,10,0),
-        3:(80,20,0),
+        1:[1,0,0],
+        2:[0.9,0.1,0],
+        3:[0.8,0.2,0],
+        4:[0.7,0.3,0],
+        5:[0.6,0.4,0],
+        6:[0.5,0.4,0.1],
+        7:[0.4,0.5,0.1],
+        8:[0.4,0.4,0.2],
+        9:[0.3,0.5,0.2],
+        10:[0.3,0.4,0.3],
+        11:[0.2,0.5,0.3],
+        12:[0.2,0.4,0.2],
+        13:[0.1,0.4,0.5],
+        14:[0,0.4,0.6]
     }
     def __init__(self, level, mika_position):
-        level
+        print(self.Hog_percentage[3])
+        type = random.choices(range(0,3), weights=self.Hog_percentage[level])
         if type == 0:
             self.image = pygame.image.load(r'resources\hog.png')
             self.speed = 0.2
