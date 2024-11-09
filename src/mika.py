@@ -5,6 +5,7 @@ from pygame.math import Vector2
 import bullet
 from collider import *
 from constants import *
+from hog import Hog
 
 BULLET_COOLDOWN = 300
 
@@ -19,7 +20,7 @@ class Mika:
         self.cooldown = 0
         self.health = 100
 
-    def update(self, bullets, space: PartitionedSpace, hog_closest=None):
+    def update(self, bullets, space: PartitionedSpace, hog_closest: Hog | None =None):
         pressed_keys = pygame.key.get_pressed()
         movement = Vector2(0, 0)
 
@@ -32,17 +33,17 @@ class Mika:
         if pressed_keys[K_RIGHT]:
             movement = Vector2(self.speed, 0)
         
-        space.move(self.collider, self.collider.position + movement)
-
+        space.move(self.collider,
+                   self.collider.position + movement)
+        
         if self.cooldown == 0:
-            if pressed_keys[K_SPACE]:
-
+            if hog_closest != None:
                 b = bullet.Bullet(
                         self.collider.position.copy(), 
-                        (mouse_pos - SCREEN_CENTER).normalize())
+                        (hog_closest.collider.position - SCREEN_CENTER).normalize())
                 bullets.append(b)
                 space.add(b.collider)
-                self.cooldown = BULLET_COOLDOWN
+                self.cooldown = 60
         else:
             self.cooldown -= 1
             

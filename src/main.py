@@ -62,23 +62,19 @@ class App:
                 self._mika.hit(c.object.attack())
 
         ## updates
-        self._mika.update(self.bullets, self.space)
-        if got_hit != None:
-            if type(got_hit.object) is Hog:
-                got_hit.object.hit(100)
-                    
-        if len(self._hog_list) > 0:
-            self._decomposition = pygame.math.Vector2.magnitude(self._hog_list[0].collider.position - self._mika.position)
-            for h in self._hog_list:
-                if pygame.math.Vector2.magnitude(h.collider.position - self._mika.position) < self._decomposition:
-                    self._hog_num = self._hog_list.index[h]
-        else:
-            self._mika.update(self.bullets, self.space)
-        
+        min_distance = 999999
+        closest_hog = None
+
+        for h in self._hog_list:
+            d = Vector2.magnitude(h.collider.position - self._mika.collider.position)
+            if d < min_distance:
+                min_distance = d
+                closest_hog = h
+
+        self._mika.update(self.bullets, self.space, closest_hog)
+    
         [b.update(self.space) for b in self.bullets]
-        self._camera = self._mika.position.copy()
-        for i in self._hog_list:
-            i.update(self.space)
+        [h.update(self.space) for h in self._hog_list]
 
         self._camera = self._mika.collider.position.copy() # camera follows plater.
 
