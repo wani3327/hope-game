@@ -6,7 +6,7 @@ from helper import *
 from pygame.locals import *
 from collider import CircleCollider, PartitionedSpace
 
-class Hedgehog:
+class Hog:
     def __init__(self, mika_position):
         self.image = pygame.image.load(r'resources\hog.png')
         self.image = pygame.transform.scale(self.image, (self.image.get_width()//50, self.image.get_height()//50))

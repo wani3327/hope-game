@@ -3,6 +3,7 @@ from pygame.locals import *
  
 from mika import Mika
 from bullet import Bullet
+from hog import Hog
 from constants import *
 import hog
 from collider import PartitionedSpace
@@ -21,16 +22,16 @@ class App:
         self._mika = Mika()
         self._mika2 = Mika()
         self.bullets: list[Bullet] = [] 
-        self._hog_list = []
+        self._hog_list: list[Hog] = []
         self.space = PartitionedSpace()
-        pygame.time.set_timer(0, 1000)
+        pygame.time.set_timer(0, 1000) # Hog 생성
  
     def on_event(self, event): # 판정
         if event.type == pygame.QUIT:
             self._running = False
 
         if event.type == 0:
-            h = hog.Hedgehog(self._mika.position)
+            h = Hog(self._mika.position)
             self._hog_list.append(h)
             self.space.add(h.collider)
             
@@ -39,7 +40,7 @@ class App:
             got_hit = self.space.do_collide(b.collider)
             # print(got_hit)
             if got_hit != None:
-                if type(got_hit.object) is hog.Hedgehog:
+                if type(got_hit.object) is Hog:
                     got_hit.object.hit(100)
 
         self._mika.update(self.bullets, self.space)
@@ -57,8 +58,7 @@ class App:
         self._mika2.draw(self._display_surf, self._camera)
         # print(len(self.bullets))
         [b.draw(self._display_surf, self._camera) for b in self.bullets]
-        for i in self._hog_list:
-            i.draw(self._display_surf, self._camera)
+        [h.draw(self._display_surf, self._camera) for h in self._hog_list]
         pygame.display.update()
 
 
