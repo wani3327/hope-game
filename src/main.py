@@ -23,7 +23,7 @@ class App:
         # game status
         self._camera = Vector2(0, 0)
         self.space = PartitionedSpace()
-        self.current_level = 1
+        self.current_level = 5
 
         # objects
         self._mika = Mika()
