@@ -1,27 +1,38 @@
 import pygame
 from pygame.locals import *
+from helper import *
+from pygame.math import Vector2
+import bullet
 
 class Mika:
     def __init__(self):
         self.image = pygame.image.load(r'resources\mika.png')
-        self.image = pygame.transform.scale(self.image, (self.image.get_width() // 10, self.image.get_height() // 10))
-        self.rect = self.image.get_rect()
-        self.rect.center = (100, 100)
-        # self.rect.scale_by_ip(0.1, 0.1)
+        self.image = pygame.transform.scale(self.image, 
+            (self.image.get_width() // 5, self.image.get_height() // 5))
+        self.size = Vector2(self.image.get_width(), self.image.get_height())
+        self.position = Vector2(0, 0)
+        self.speed = 0.5
 
-    def update(self):
+    def update(self, bullets):
         pressed_keys = pygame.key.get_pressed()
-       #if pressed_keys[K_UP]:
-            #self.rect.move_ip(0, -5)
-       #if pressed_keys[K_DOWN]:
-            #self.rect.move_ip(0,5)
-         
-        if self.rect.left > 0:
-              if pressed_keys[K_LEFT]:
-                  self.rect.move_ip(-1, 0)
-        if self.rect.right < 640:        
-              if pressed_keys[K_RIGHT]:
-                  self.rect.move_ip(1, 0)
+        mouse_pos = Vector2(*pygame.mouse.get_pos())
+
+        if pressed_keys[K_UP]:
+            self.position += Vector2(0, -self.speed)
+        if pressed_keys[K_DOWN]:
+            self.position += Vector2(0, self.speed)
+        if pressed_keys[K_LEFT]:
+            self.position += Vector2(-self.speed, 0)
+        if pressed_keys[K_RIGHT]:
+            self.position += Vector2(self.speed, 0)
+        
+        if pressed_keys[K_SPACE]:
+            bullets.append(
+                bullet.Bullet(
+                    self.position.copy(), 
+                    (mouse_pos - SCREEN_CENTER).normalize())
+            )
+
  
-    def draw(self, surface):
-        surface.blit(self.image, self.rect)
+    def draw(self, surface, camera: Vector2):
+        surface.blit(self.image, get_offset_camera(self.position, camera, self.size))

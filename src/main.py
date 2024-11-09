@@ -1,39 +1,50 @@
 import pygame
 from pygame.locals import *
  
-import mika
+from mika import Mika
+from bullet import Bullet
+from constants import *
 import hedgehog
 
 class App:
     def __init__(self):
         self._running = True
         self._display_surf = None
-        self.size = self.weight, self.height = 640, 400
-        
-    def on_init(self): # 설정 초기화
+        self.size = SCREEN_WIDTH, SCREEN_HEIGHT
+ 
+    def on_init(self):
         pygame.init()
         self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
-        self._mika = mika.Mika()
+        self._camera = pygame.Rect(0, 0, 0, 0)
+        self._mika = Mika()
+        self._mika2 = Mika()
+        self.bullets: list[Bullet] = [] 
         self._hedgehog_list = []
         pygame.time.set_timer(0, 1000)
  
     def on_event(self, event): # 판정
         if event.type == pygame.QUIT:
             self._running = False
+
         if event.type == 0:
             self._hedgehog_list.append(hedgehog.Hedgehog())
             
     def on_loop(self): # 판정 결과 반영, 틱 이후 진행
-        self._mika.update()
+        self._mika.update(self.bullets)
+        [b.update() for b in self.bullets]
+        self._camera = self._mika.position.copy()
         for i in self._hedgehog_list:
             i.update()
 
     def on_render(self): # 진행 렌더
         self._display_surf.fill((255, 255, 255))
-        self._mika.draw(self._display_surf)
+        self._mika.draw(self._display_surf, self._camera)
+        self._mika2.draw(self._display_surf, self._camera)
+        # print(len(self.bullets))
+        [b.draw(self._display_surf, self._camera) for b in self.bullets]
         for i in self._hedgehog_list:
-            i.draw(self._display_surf)
+            i.draw(self._display_surf, self._camera)
         pygame.display.update()
 
 
