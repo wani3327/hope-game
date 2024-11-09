@@ -55,6 +55,11 @@ class App:
                     if c.object.hit(100): # it died
                         self._hog_list.remove(c.object)
                         self.space.remove(c)
+        
+        collides_with_mika = self.space.do_collide(self._mika.collider)
+        for c in collides_with_mika:
+            if type(c.object) is Hog:
+                self._mika.hit(c.object.attack())
 
         ## updates
         self._mika.update(self.bullets, self.space)

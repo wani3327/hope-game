@@ -4,6 +4,7 @@ from helper import *
 from pygame.math import Vector2
 import bullet
 from collider import *
+from constants import *
 
 BULLET_COOLDOWN = 300
 
@@ -34,8 +35,8 @@ class Mika:
         
         space.move(self.collider, self.collider.position + movement)
 
-        if pressed_keys[K_SPACE]:
-            if self.cooldown == 0:
+        if self.cooldown == 0:
+            if pressed_keys[K_SPACE]:
 
                 b = bullet.Bullet(
                         self.collider.position.copy(), 
@@ -43,13 +44,23 @@ class Mika:
                 bullets.append(b)
                 space.add(b.collider)
                 self.cooldown = BULLET_COOLDOWN
-            else:
-                self.cooldown -= 1
+        else:
+            self.cooldown -= 1
             
 
  
     def draw(self, surface, camera: Vector2):
+        font = Font(None, 36)
         surface.blit(self.image, get_offset_camera(self.collider.position, camera, self.size))
+        text_obj = font.render(str(self.health), True, (0, 0, 0)) 
+        text_size =  Vector2(*text_obj.get_rect().size)
+        surface.blit(
+            text_obj, 
+            get_offset_camera(
+                self.collider.position + Vector2(0, 100),
+                camera,
+                text_size
+        ))
 
     def hit(self, amount: float) -> None:
         self.health -= amount

@@ -6,6 +6,8 @@ from helper import *
 from pygame.locals import *
 from collider import CircleCollider, PartitionedSpace
 
+HOG1_ATTACK_COOLDOWN = 15
+
 class Hog:
     def __init__(self, mika_position):
         self.image = pygame.image.load(r'resources\hog.png')
@@ -18,12 +20,16 @@ class Hog:
         # status
         self.speed = 0.2
         self.health = 1
-        self.cooldown = 15
+        self.cooldown = 0
+        self.power = 1
 
     def update(self, space: PartitionedSpace):
         space.move(self.collider, 
             self.collider.position + self.speed * Vector2.normalize(self.mika_position - self.collider.position)
         )
+
+        if self.cooldown != 0:
+            self.cooldown -= 1
  
     def draw(self, surface, camera):
         surface.blit(self.image, get_offset_camera(self.collider.position, camera, self.size))
@@ -31,3 +37,9 @@ class Hog:
     def hit(self, amount) -> bool:
         self.health -= amount
         return self.health <= 0
+    
+    def attack(self) -> float:
+        if self.cooldown == 0:
+            self.cooldown = HOG1_ATTACK_COOLDOWN
+            return self.power
+        return 0
