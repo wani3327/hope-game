@@ -22,7 +22,7 @@ class Mika:
         
         self.speed = 0.5
         self.current_level = 1
-        self.weapon_level = [0,0,0,0] # Bullet Fireball Lightning Bat
+        self.weapon_level = [-1, -1, -1, -1] # Bullet Fireball Lightning Bat
         self.cooldown = [[750,500,250],[3000,3000,3000],[5000,3000,3000],[3000,3000,3000]] # Bullet Fireball Lightning Bat
         self.bullet_cooldown = 0
         self.fireball_cooldown = 0
@@ -31,12 +31,10 @@ class Mika:
         self.health = 100
         self.exp = 0
         
-        self.bullet_available = True
         self.bullet_cooldown = 0
-        self.fireball_available = False
         self.fireball_cooldown = 0
 
-    def update(self, bullets, spaces: list[PartitionedSpace], hog_closest: Hog | None =None):
+    def update(self, bullets: set[Bullet], hog_closest: Hog | None = None):
         pressed_keys = pygame.key.get_pressed()
         movement = Vector2(0, 0)
 
@@ -52,7 +50,7 @@ class Mika:
         self.collider.position += movement
         
 
-        if self.bullet_available:    
+        if self.weapon_level[0] >= 0:    
             if self.bullet_cooldown == 0:
                 if hog_closest != None:
                     position = self.collider.position.copy()
@@ -64,7 +62,7 @@ class Mika:
             else:
                 self.bullet_cooldown -= 1
         
-        if self.fireball_available:
+        if self.weapon_level[1] >= 0:
             if self.fireball_cooldown == 0:
                 position = self.collider.position.copy()
                 f = Fireball(position)
@@ -90,6 +88,8 @@ class Mika:
             orb_set.add(item)
             space.add(item.collider)
 
+    def get_item(self, item: Item):
+        pass
  
     def draw(self, surface, camera: Vector2):
         font = Font(None, 36)

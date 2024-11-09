@@ -90,7 +90,7 @@ class App:
                 min_distance = d
                 closest_hog = h
 
-        self._mika.update(self.bullets, [self.hog_space, self.orb_space], closest_hog)
+        self._mika.update(self.bullets, closest_hog)
 
         ### bullet    
         for b in self.bullets:
