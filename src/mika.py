@@ -43,7 +43,7 @@ class Mika:
                         (hog_closest.collider.position - self.collider.position).normalize())
                 bullets.append(b)
                 space.add(b.collider)
-                self.cooldown = 60
+                self.cooldown = 750
         else:
             self.cooldown -= 1
             
