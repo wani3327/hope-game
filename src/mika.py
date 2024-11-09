@@ -78,15 +78,6 @@ class Mika:
     def try_level_up(self, get_exp_value: int, space: PartitionedSpace, orb_set: set[Drop]):
         self.exp += get_exp_value
 
-        if self.fireball_cooldown == 0:
-                position = self.collider.position.copy()
-                f = Fireball(position)
-                bullets.add(f)
-                space.add(f.collider)
-                self.fireball_cooldown = self.cooldown[1][self.weapon_level[1]]
-        else:
-            self.fireball_cooldown -= 1
-        
         if self.level_exp[self.current_level-1] <= self.exp:
             self.current_level += 1
             self.exp = 0
