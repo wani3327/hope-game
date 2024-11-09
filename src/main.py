@@ -5,10 +5,20 @@ import mika
 from constants import *
 
 class App:
+    _instance = None
+
+    @staticmethod
+    def get_instance():
+        if App._instance == None:
+            App()
+        else:
+            return App._instance
+
     def __init__(self):
         self._running = True
         self._display_surf = None
         self.size = SCREEN_WIDTH, SCREEN_HEIGHT
+        App._instance = self
  
     def on_init(self):
         pygame.init()
