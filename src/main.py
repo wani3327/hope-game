@@ -44,7 +44,7 @@ class App:
         # print(len(self.bullets))
         [b.draw(self._display_surf, self._camera) for b in self.bullets]
         for i in self._hedgehog_list:
-            i.draw(self._display_surf)
+            i.draw(self._display_surf, self._camera)
         pygame.display.update()
 
 
