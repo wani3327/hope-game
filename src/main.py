@@ -4,6 +4,7 @@ from pygame.locals import *
 from mika import Mika
 from bullet import *
 from hog import Hog
+from lightning import Lightning
 from constants import *
 from collider import PartitionedSpace
 from orb import *
@@ -33,6 +34,7 @@ class App:
         self._mika2 = Mika()
         
         self.bullets: set[Bullet] = set() 
+        self.lightnings: set[Lightning] = set()
         self._hog_list: set[Hog] = set()
         self._orb_list: set[Drop] = set()
 
@@ -81,7 +83,7 @@ class App:
 
         ## updates
         ### mika
-        self._mika.update(self.bullets, self._hog_list)
+        self._mika.update(self.bullets, self.lightnings, self._hog_list)
 
         ### bullet    
         for b in self.bullets:
@@ -89,7 +91,19 @@ class App:
 
             if b.lifetime == 0:
                 dying_bullet.add(b)
-
+                
+        ### lightning
+        for l in self.lightnings:
+            l.update()
+            if l.lifetime == 0:
+                dying_bullet.add(l)
+        
+        print(type(self._mika.hog_lightning))
+        for i in self._mika.hog_lightning:
+            if i.hit(11):
+                self._kill_hog(i, None, None)
+            
+    
         ### hogs
         [h.update(self._mika.collider.position, self.hog_space) for h in self._hog_list]
 
@@ -106,8 +120,7 @@ class App:
                         if entity.object.hit(11):
                             self._kill_hog(entity.object, b, None)
 
-
-            self.bullets.remove(d)
+            self.lightnings.remove(d)
             # self.space.remove(d.collider)
 
 
@@ -116,7 +129,7 @@ class App:
         if pygame.key.get_pressed()[K_ESCAPE]: # game terminates
             self._running = False
 
-    def _kill_hog(self, hog: Hog, bullet: Bullet, dying_bullet: set[Bullet] | None):
+    def _kill_hog(self, hog: Hog, bullet: Bullet | None, dying_bullet: set[Bullet] | None):
         # remove hog
         self._hog_list.remove(hog)
         self.hog_space.remove(hog.collider)
@@ -136,6 +149,7 @@ class App:
         self._mika2.draw(self._display_surf, self._camera)
         # print(len(self.bullets))
         [b.draw(self._display_surf, self._camera) for b in self.bullets]
+        [l.draw(self._display_surf, self._camera) for l in self.lightnings]
         [h.draw(self._display_surf, self._camera) for h in self._hog_list]
         [e.draw(self._display_surf, self._camera) for e in self._orb_list]
 
