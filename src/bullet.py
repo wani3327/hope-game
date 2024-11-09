@@ -9,7 +9,7 @@ class Bullet:
         # print('bullet', initial_position, direction)
         self.image = pygame.image.load(r'resources\hots.png')
         self.image = pygame.transform.scale(self.image, 
-            (self.image.get_width(), self.image.get_height()))
+            (self.image.get_width() // 7, self.image.get_height() // 7))
         self.size = Vector2(self.image.get_width(), self.image.get_height())
         self.direction = direction
         self.speed = 5

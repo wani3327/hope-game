@@ -5,8 +5,8 @@ from mika import Mika
 from bullet import Bullet
 from hog import Hog
 from constants import *
-from hog import Hog
 from collider import PartitionedSpace
+from orb import ExpOrb
 
 class App:
     def __init__(self):
@@ -31,6 +31,7 @@ class App:
         
         self.bullets: list[Bullet] = [] 
         self._hog_list: list[Hog] = []
+        self._orb_list: list[ExpOrb] = []
 
         # misc
         pygame.time.set_timer(0, 1000) # Hog 생성
@@ -49,12 +50,20 @@ class App:
         ## physics
         for b in self.bullets:
             got_hits = self.space.do_collide(b.collider)
-            # print(got_hit)
+
             for c in got_hits:
                 if type(c.object) is Hog:
+
                     if c.object.hit(100): # it died
+                        # remove hog
                         self._hog_list.remove(c.object)
                         self.space.remove(c)
+
+                        # drop orb
+                        orb = ExpOrb(c.position, 3)
+                        self._orb_list.append(orb)
+                        self.space.add(orb.collider)
+                        
         
         collides_with_mika = self.space.do_collide(self._mika.collider)
         for c in collides_with_mika:
@@ -88,6 +97,7 @@ class App:
         # print(len(self.bullets))
         [b.draw(self._display_surf, self._camera) for b in self.bullets]
         [h.draw(self._display_surf, self._camera) for h in self._hog_list]
+        [e.draw(self._display_surf, self._camera) for e in self._orb_list]
         pygame.display.update()
 
 
