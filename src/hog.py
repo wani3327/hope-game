@@ -103,6 +103,7 @@ class Hog:
 
     def hit(self, amount) -> bool:
         self.health -= amount
+        print(f'hog hurts {amount} => {self.health}')
         return self.health <= 0
     
     def attack(self) -> float:

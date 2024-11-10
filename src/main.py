@@ -58,8 +58,9 @@ class App:
         for b in self.bullets:
             got_hit = self.hog_space.do_collide(b.collider)
             if got_hit != None and type(got_hit.object) is Hog:
-                    if got_hit.object.hit(b.damage): # it died
-                        self._kill_hog(got_hit.object, b, dying_bullet)
+                if got_hit.object.hit(b.damage): # it died
+                    self._kill_hog(got_hit.object, b)
+                dying_bullet.add(b)
                         
         for l in self.lightnings:
             if not l.used:
@@ -128,28 +129,23 @@ class App:
                     else:
                         break
 
-
             self.bullets.remove(d)
-            # self.space.remove(d.collider)
 
         for d in dying_lightning:
             self.lightnings.remove(d)
 
         for d in dying_orb:
             self._kill_drop(d)
-            
+
         self._camera = self._mika.collider.position.copy() # camera follows plater.
 
         if pygame.key.get_pressed()[K_ESCAPE]: # game terminates
             self._running = False
 
-    def _kill_hog(self, hog: Hog, bullet: Bullet | None, dying_bullet: set[Bullet] | None):
+    def _kill_hog(self, hog: Hog, bullet: Bullet | None):
         # remove hog
         self._hog_list.remove(hog)
         self.hog_space.remove(hog.collider)
-
-        if dying_bullet != None:
-            dying_bullet.add(bullet)
 
         # drop orb
         orb = ExpOrb(hog.collider.position, hog.image + 1)
