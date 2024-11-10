@@ -26,7 +26,7 @@ class Hog:
         13:[0.1,0.4,0.5],
         14:[0,0.4,0.6]
     }
-    def __init__(self, level):
+    def __init__(self, level, mika_position):
         type = random.choices([0,1,2], weights=self.Hog_percentage[level])
         if type == [0]:
             self.image = pygame.image.load(r'resources\hog.png')

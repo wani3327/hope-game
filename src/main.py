@@ -44,7 +44,7 @@ class App:
             self._running = False
 
         if event.type == 0:
-            h = Hog(self._mika.current_level)
+            h = Hog(self._mika.current_level, self._mika.collider.position)
             self._hog_list.add(h)
             self.hog_space.add(h.collider)
             

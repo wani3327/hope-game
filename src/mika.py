@@ -77,8 +77,8 @@ class Mika:
         if self.weapon_level[2] >= 0:
             if self.lightning_cooldown == 0:
                 if len(hog_list) >= 1:
-                    if self.weapon_level[2] == 2 and len(hog_list) >=2 :
-                        hog_lightning_list = random.sample(list(hog_list))
+                    if self.weapon_level[2] == 2 and len(hog_list) >= 2:
+                        hog_lightning_list = random.sample(list(hog_list), 2)
                         position = hog_lightning_list[0].collider.position.copy()
                         l = Lightning(position,damage=20)
                         lightnings.add(l)
@@ -95,6 +95,16 @@ class Mika:
             else:
                 self.lightning_cooldown -= 1
                 
+        
+    def find_nearest(self, hog_list: list[Hog]):
+        closest_hog = None
+        min_distance = 999999
+        for h in hog_list:
+            d = Vector2.magnitude(h.collider.position - self.collider.position)
+            if d < min_distance:
+                min_distance = d
+                closest_hog = h
+        return closest_hog
 
         
         
