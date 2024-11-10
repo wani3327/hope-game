@@ -27,14 +27,14 @@ class Hog:
         14:[0,0.4,0.6]
     }
     def __init__(self, level, mika_position):
-        self.type = random.choices([0,1,2], weights=self.Hog_percentage[level])
-        if self.type == [0]:
+        type = random.choices([0,1,2], weights=self.Hog_percentage[level])
+        if type == [0]:
             self.image = pygame.image.load(r'resources\hog.png')
             self.speed = 0.2
             self.health = 1
             self.cooldown = 0
             self.power = 1
-        elif self.type == [1]:
+        elif type == [1]:
             self.image = pygame.image.load(r'resources\hog2.png')
             self.speed = 0.2
             self.health = 11
@@ -52,9 +52,6 @@ class Hog:
         x = random.randint(-600, 600)
         pos = mika_position + Vector2(x, int(math.sqrt(360000-x*x))*random.choice([-1,1]))
         self.collider = CircleCollider(self, pos, 20)
-        self.mika_position = mika_position
-            
-            # status
             
     def update(self, mika_currentposition, space: PartitionedSpace):
         space.move(self.collider, 

@@ -22,14 +22,11 @@ class App:
 
         # game status
         self._camera = Vector2(0, 0)
-        # self.space = PartitionedSpace()
         self.hog_space = PartitionedSpace()
         self.orb_space = PartitionedSpace()
 
         # objects
         self._mika = Mika()
-        # self.hog_space.add(self._mika.collider)
-        # self.orb_space.add(self._mika.collider)
         self._mika2 = Mika()
         
         self.bullets: set[Bullet] = set()
@@ -47,7 +44,7 @@ class App:
             self._running = False
 
         if event.type == 0:
-            h = Hog(self._mika.current_level, self._mika.collider.position)
+            h = Hog(self._mika.current_level)
             self._hog_list.add(h)
             self.hog_space.add(h.collider)
             
@@ -83,12 +80,16 @@ class App:
             if isinstance(c.object, Drop):
                 if type(c.object) is ExpOrb:
                     self._mika.try_level_up(c.object.value, self.orb_space, self._orb_list)
+                    self._orb_list.remove(c.object)
+                    self.orb_space.remove(c)
 
                 elif type(c.object) is Item:
-                    pass
+                    self._mika.get_item(c.object)
 
-                self._orb_list.remove(c.object)
-                self.orb_space.remove(c)
+                    for i in c.object.friend:
+                        self._orb_list.remove(i)
+                        self.orb_space.remove(i.collider)
+
 
         ## updates
         ### mika
@@ -142,8 +143,7 @@ class App:
             dying_bullet.add(bullet)
 
         # drop orb
-        exp_list = [1,2,3]
-        orb = ExpOrb(hog.collider.position, exp_list[hog.type[0]])
+        orb = ExpOrb(hog.collider.position, 3)
         self._orb_list.add(orb)
         self.orb_space.add(orb.collider)
 

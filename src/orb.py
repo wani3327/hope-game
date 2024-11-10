@@ -24,6 +24,7 @@ class Item(Drop):
         self.value = value
         path = ''
         scale = 1
+        self.friend: list[Item] = []
 
         if value == 'bow':
             path = 'hots'
