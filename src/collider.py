@@ -33,9 +33,8 @@ class PartitionedSpace:
         collider.position = new_position
         self.add(collider)
 
-    def do_collide(self, collider: Collider) -> list[Collider]:
+    def do_collide(self, collider: Collider) -> Collider | None:
         key_x, key_y = self._find_key(collider.position)
-        res = []
 
         for key in [(key_x - 1, key_y + 1), (key_x, key_y + 1), (key_x + 1, key_y + 1),
                     (key_x - 1, key_y),     (key_x, key_y),     (key_x + 1, key_y),
@@ -45,14 +44,12 @@ class PartitionedSpace:
                 continue
             
             for c in self.map[key]:
-                if collider.do_collide(c):
-                    if c is collider:
-                        continue
-
-                    res.append(c)
-                    return res
+                if collider.do_collide(c) \
+                    and c is not collider \
+                    and c.object is not collider.object:
+                    return c
             
-        return res
+        return None
 
 
 class CircleCollider(Collider):

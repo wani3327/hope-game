@@ -8,7 +8,7 @@ from constants import *
 from hog import Hog
 from orb import Drop, Item
 
-BULLET_COOLDOWN = 300
+BULLET_COOLDOWN = 60
 
 class Mika:
     level_exp = [6,10,16,23,25,29,30,32,35,38,41,44,47,51]
@@ -20,10 +20,10 @@ class Mika:
         self.size = Vector2(self.image.get_width(), self.image.get_height())
         self.collider = CircleCollider(self, Vector2(0, 0), 30)
         
-        self.speed = 0.5
+        self.speed = 2.5
         self.current_level = 1
         self.weapon_level = [0, -1, -1, -1] # Bullet Fireball Lightning Bat
-        self.cooldown = [[750,500,250],[3000,3000,3000],[5000,3000,3000],[3000,3000,3000]] # Bullet Fireball Lightning Bat
+        self.cooldown = [[45,30,15],[180,180,180],[300,180,180],[3000,3000,3000]] # Bullet Fireball Lightning Bat
         self.bullet_cooldown = 0
         self.fireball_cooldown = 0
         self.lightning_cooldown = 0
