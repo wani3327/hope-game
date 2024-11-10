@@ -42,11 +42,6 @@ class Fireball(Bullet):
     
     def update(self):
         self.collider.position += self.speed * self.direction
-=========
-    def update(self):#, space: PartitionedSpace):
-        self.collider.position = self.collider.position + self.speed * self.direction
-        # space.move(self.collider, self.collider.position + self.speed * self.direction)
->>>>>>>>> Temporary merge branch 2
         self.lifetime -= 1
 
 class Lightning(Bullet):

@@ -41,7 +41,7 @@ class Hog:
             (cls.image2.get_width() // 20, cls.image2.get_height() // 20))
         cls.size2 = Vector2(cls.image2.get_width(), cls.image2.get_height())
 
-    def __init__(self, level, mika_position, mika_position):
+    def __init__(self, level, mika_position):
         if not Hog.is_setup:
             self.setup()
             Hog.is_setup = True
