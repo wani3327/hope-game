@@ -49,13 +49,13 @@ class Hog:
         type = random.choices([0, 1, 2], weights=self.Hog_percentage[level])
         if type == [0]:
             self.image = 0
-            self.speed = 0.2
+            self.speed = 1
             self.health = 1
             self.cooldown = 0
             self.power = 1
         elif type == [1]:
             self.image = 1
-            self.speed = 0.2
+            self.speed = 1
             self.health = 11
             self.cooldown = 0
             self.power = 1
@@ -72,9 +72,19 @@ class Hog:
         self.collider = CircleCollider(self, pos, 20)
             
     def update(self, mika_currentposition, space: PartitionedSpace):
-        space.move(self.collider, 
-            self.collider.position + self.speed * Vector2.normalize(mika_currentposition - self.collider.position)
-        )
+        new_pos = self.collider.position \
+            + self.speed * Vector2.normalize(mika_currentposition - self.collider.position)
+
+        collision = space.do_collide(CircleCollider(self, new_pos, 100))
+        
+        if collision != None and type(collision.object) is Hog:
+            distance_btw_colliding_hog = collision.position.distance_squared_to(self.collider.position)
+            if 0 < distance_btw_colliding_hog:
+                opposite_direction = (self.collider.position - collision.position).normalize()
+                other_pos = self.collider.position + self.speed * opposite_direction
+                space.move(self.collider, other_pos)
+        else:
+            space.move(self.collider, new_pos)
 
         if self.cooldown != 0:
             self.cooldown -= 1
