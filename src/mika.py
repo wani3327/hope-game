@@ -34,18 +34,18 @@ class Mika:
         self.bullet_cooldown = 0
         self.fireball_cooldown = 0
 
-    def update(self, bullets: set[Bullet], hog_list:set[Hog]):
+    def update(self, bullets: set[Bullet], lightnings:set[Lightning], hog_list:set[Hog]):
         pressed_keys = pygame.key.get_pressed()
         movement = Vector2(0, 0)
 
         if pressed_keys[K_UP]:
-            movement = Vector2(0, -self.speed)
+            movement += Vector2(0, -self.speed)
         if pressed_keys[K_DOWN]:
-            movement = Vector2(0, self.speed)
+            movement += Vector2(0, self.speed)
         if pressed_keys[K_LEFT]:
-            movement = Vector2(-self.speed, 0)
+            movement += Vector2(-self.speed, 0)
         if pressed_keys[K_RIGHT]:
-            movement = Vector2(self.speed, 0)
+            movement += Vector2(self.speed, 0)
         
         self.collider.position += movement
 
@@ -58,16 +58,17 @@ class Mika:
                     position = self.collider.position.copy()
                     b = Bullet(
                         position,
-                        (closest_hog.collider.position - self.collider.position).normalize())
+                        (closest_hog.collider.position - self.collider.position).normalize(),
+                        damage=6)
                     bullets.add(b)
-                    self.bullet_cooldown = 750
+                    self.bullet_cooldown = self.cooldown[0][self.weapon_level[0]]
             else:
                 self.bullet_cooldown -= 1
         
         if self.weapon_level[1] >= 0:
             if self.fireball_cooldown == 0:
                 position = self.collider.position.copy()
-                f = Fireball(position)
+                f = Fireball(position,damage=11)
                 bullets.add(f)
                 self.fireball_cooldown = 750
             else:
@@ -75,17 +76,27 @@ class Mika:
     
         if self.weapon_level[2] >= 0:
             if self.lightning_cooldown == 0:
-                pass
+                if len(hog_list) >= 1:
+                    if self.weapon_level[2] == 2 and len(hog_list) >=2 :
+                        hog_lightning_list = random.sample(list(hog_list))
+                        position = hog_lightning_list[0].collider.position.copy()
+                        l = Lightning(position,damage=20)
+                        lightnings.add(l)
+                        position = hog_lightning_list[1].collider.position.copy()
+                        l = Lightning(position,damage=20)
+                        lightnings.add(l)
+                        self.lightning_cooldown = self.cooldown[2][self.weapon_level[2]]
+                    else:
+                        hog_lightning_list = random.choice(list(hog_list))
+                        position = hog_lightning_list.collider.position.copy()
+                        l = Lightning(position,damage=20)
+                        lightnings.add(l)
+                        self.lightning_cooldown = self.cooldown[2][self.weapon_level[2]]
+            else:
+                self.lightning_cooldown -= 1
+                
+
         
-    def find_nearest(self, hog_list):
-        closest_hog = None
-        min_distance = 999999
-        for h in hog_list:
-            d = Vector2.magnitude(h.collider.position - self.collider.position)
-            if d < min_distance:
-                min_distance = d
-            closest_hog = h
-        return closest_hog
         
     def try_level_up(self, get_exp_value: int, space: PartitionedSpace, orb_set: set[Drop]):
         self.exp += get_exp_value

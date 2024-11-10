@@ -29,7 +29,8 @@ class App:
         self._mika = Mika()
         self._mika2 = Mika()
         
-        self.bullets: set[Bullet] = set() 
+        self.bullets: set[Bullet] = set()
+        self.lightnings: set[Lightning] = set()
         self._hog_list: set[Hog] = set()
         self._orb_list: set[Drop] = set()
 
@@ -49,15 +50,25 @@ class App:
             
     def on_loop(self): # 판정 결과 반영, 틱 이후 진행
         dying_bullet: set[Bullet] = set()
+        dying_lightning: set[Lightning] = set()
+        
         ## physics
         for b in self.bullets:
             got_hits = self.hog_space.do_collide(b.collider)
-
             for c in got_hits:
                 if type(c.object) is Hog:
-                    if c.object.hit(100): # it died
+                    if c.object.hit(b.damage): # it died
                         self._kill_hog(c.object, b, dying_bullet)
                         
+        for l in self.lightnings:
+            if not l.used:
+                got_hits = self.hog_space.do_collide(l.collider)
+                for c in got_hits:
+                    if type(c.object) is Hog:
+                        if c.object.hit(l.damage): # it died
+                            self._kill_hog(c.object, None, None)
+                            l.used = True
+                            
         
         collides_with_mika = self.hog_space.do_collide(self._mika.collider)
         for c in collides_with_mika:
@@ -82,14 +93,18 @@ class App:
 
         ## updates
         ### mika
-        self._mika.update(self.bullets, self._hog_list)
+        self._mika.update(self.bullets, self.lightnings, self._hog_list)
 
         ### bullet    
         for b in self.bullets:
             b.update()
-
             if b.lifetime == 0:
                 dying_bullet.add(b)
+        
+        for b in self.lightnings:
+            b.update()
+            if b.lifetime == 0:
+                dying_lightning.add(b)
 
         ### hogs
         [h.update(self._mika.collider.position, self.hog_space) for h in self._hog_list]
@@ -111,13 +126,15 @@ class App:
             self.bullets.remove(d)
             # self.space.remove(d.collider)
 
+        for d in dying_lightning:
+            self.lightnings.remove(d)
 
         self._camera = self._mika.collider.position.copy() # camera follows plater.
 
         if pygame.key.get_pressed()[K_ESCAPE]: # game terminates
             self._running = False
 
-    def _kill_hog(self, hog: Hog, bullet: Bullet, dying_bullet: set[Bullet] | None):
+    def _kill_hog(self, hog: Hog, bullet: Bullet | None, dying_bullet: set[Bullet] | None):
         # remove hog
         self._hog_list.remove(hog)
         self.hog_space.remove(hog.collider)
@@ -137,6 +154,7 @@ class App:
         self._mika2.draw(self._display_surf, self._camera)
         # print(len(self.bullets))
         [b.draw(self._display_surf, self._camera) for b in self.bullets]
+        [l.draw(self._display_surf, self._camera) for l in self.lightnings]
         [h.draw(self._display_surf, self._camera) for h in self._hog_list]
         [e.draw(self._display_surf, self._camera) for e in self._orb_list]
 
