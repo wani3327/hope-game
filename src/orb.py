@@ -4,7 +4,8 @@ from helper import *
 
 class Drop:
     def __init__(self) -> None:
-        pass
+        self.lifetime = 3600
+        self.collider: Collider = None
 
     def draw(self, surface, camera):
         surface.blit(self.image, get_offset_camera(self.collider.position, camera, self.size))
@@ -12,6 +13,7 @@ class Drop:
 
 class ExpOrb(Drop):
     def __init__(self, position: Vector2, value: int) -> None:
+        super().__init__()
         self.image = pygame.image.load(r'resources\diamond.png')
         self.image = pygame.transform.scale(self.image, (self.image.get_width()//20, self.image.get_height()//20))
         self.size = Vector2(self.image.get_width(), self.image.get_height())
@@ -21,6 +23,7 @@ class ExpOrb(Drop):
     
 class Item(Drop):
     def __init__(self, position: Vector2, value: str) -> None:
+        super().__init__()
         self.value = value
         path = ''
         scale = 1
