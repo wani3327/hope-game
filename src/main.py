@@ -142,7 +142,8 @@ class App:
             dying_bullet.add(bullet)
 
         # drop orb
-        orb = ExpOrb(hog.collider.position, 3)
+        exp_list = [1,2,3]
+        orb = ExpOrb(hog.collider.position, exp_list[hog.type[0]])
         self._orb_list.add(orb)
         self.orb_space.add(orb.collider)
 
