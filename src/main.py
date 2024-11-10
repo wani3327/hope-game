@@ -29,7 +29,7 @@ class App:
 
         # objects
         self._mika = Mika()
-        self._mika2 = Mika()
+        # self._mika2 = Mika()
         
         self.bullets: set[Bullet] = set()
         self.lightnings: set[Lightning] = set()
@@ -159,7 +159,7 @@ class App:
     def on_render(self): # 진행 렌더
         self._display_surf.fill((255, 255, 255))
         self._mika.draw(self._display_surf, self._camera)
-        self._mika2.draw(self._display_surf, self._camera)
+        # self._mika2.draw(self._display_surf, self._camera)
         # print(len(self.bullets))
         [b.draw(self._display_surf, self._camera) for b in self.bullets]
         [l.draw(self._display_surf, self._camera) for l in self.lightnings]
