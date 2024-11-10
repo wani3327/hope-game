@@ -46,9 +46,9 @@ class Fireball(Bullet):
 
 class Lightning(Bullet):
     def __init__(self, initial_position: Vector2, damage):
-        self.image = pygame.image.load(r'resources\mika.png')
+        self.image = pygame.image.load(r'resources\lightning.png')
         self.image = pygame.transform.scale(self.image, 
-            (self.image.get_width() // 8, self.image.get_height() // 8))
+            (self.image.get_width() // 16, self.image.get_height() // 16))
         self.size = Vector2(self.image.get_width(), self.image.get_height())
         self.collider = CircleCollider(self, initial_position, 50)
         self.lifetime = 30
