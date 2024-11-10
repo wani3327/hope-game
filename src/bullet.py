@@ -40,9 +40,8 @@ class Fireball(Bullet):
         self.lifetime = 300
         self.damage = damage
     
-    def update(self):#, space: PartitionedSpace):
-        self.collider.position = self.collider.position + self.speed * self.direction
-        # space.move(self.collider, self.collider.position + self.speed * self.direction)
+    def update(self):
+        self.collider.position += self.speed * self.direction
         self.lifetime -= 1
 
 class Lightning(Bullet):

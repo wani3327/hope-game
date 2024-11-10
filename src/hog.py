@@ -26,35 +26,50 @@ class Hog:
         13:[0.1,0.4,0.5],
         14:[0,0.4,0.6]
     }
+    image1 = pygame.image.load(r'resources\hog.png')
+    size1 = Vector2(1, 1)
+    image2 = pygame.image.load(r'resources\hog2.png')
+    size2 = Vector2(1, 1)
+    is_setup = False
+
+    @classmethod
+    def setup(cls):
+        cls.image1 = pygame.transform.scale(cls.image1,
+            (cls.image1.get_width() // 20, cls.image1.get_height() // 20))
+        cls.size1 = Vector2(cls.image1.get_width(), cls.image1.get_height())
+        cls.image2 = pygame.transform.scale(cls.image2,
+            (cls.image2.get_width() // 20, cls.image2.get_height() // 20))
+        cls.size2 = Vector2(cls.image2.get_width(), cls.image2.get_height())
+
     def __init__(self, level, mika_position):
-        type = random.choices([0,1,2], weights=self.Hog_percentage[level])
+        if not Hog.is_setup:
+            self.setup()
+            Hog.is_setup = True
+
+        type = random.choices([0, 1, 2], weights=self.Hog_percentage[level])
         if type == [0]:
-            self.image = pygame.image.load(r'resources\hog.png')
+            self.image = 0
             self.speed = 0.2
             self.health = 1
             self.cooldown = 0
             self.power = 1
         elif type == [1]:
-            self.image = pygame.image.load(r'resources\hog2.png')
+            self.image = 1
             self.speed = 0.2
             self.health = 11
             self.cooldown = 0
             self.power = 1
         else:
-            self.image = pygame.image.load(r'resources\hog.png')
+            self.image = 0
             self.speed = 0.2
             self.health = 21
             self.cooldown = 0
             self.power = 1
 
-        self.image = pygame.transform.scale(self.image, (self.image.get_width()//20, self.image.get_height()//20))
-        self.size = Vector2(self.image.get_width(), self.image.get_height())
+        
         x = random.randint(-600, 600)
         pos = mika_position + Vector2(x, int(math.sqrt(360000-x*x))*random.choice([-1,1]))
         self.collider = CircleCollider(self, pos, 20)
-        self.mika_position = mika_position
-            
-            # status
             
     def update(self, mika_currentposition, space: PartitionedSpace):
         space.move(self.collider, 
@@ -65,7 +80,16 @@ class Hog:
             self.cooldown -= 1
  
     def draw(self, surface, camera):
-        surface.blit(self.image, get_offset_camera(self.collider.position, camera, self.size))
+
+        if self.image == 0:
+            surface.blit(
+                Hog.image1, 
+                get_offset_camera(self.collider.position, camera, Hog.size1))
+        else:
+            surface.blit(
+                Hog.image2,
+                get_offset_camera(self.collider.position, camera, Hog.size2))
+        
 
     def hit(self, amount) -> bool:
         self.health -= amount
