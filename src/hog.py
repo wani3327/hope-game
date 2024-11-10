@@ -11,7 +11,7 @@ HOG1_ATTACK_COOLDOWN = 15
 
 class Hog:
     Hog_percentage = {
-        1:[1,0,0],
+        1:[0,1,0],
         2:[0.9,0.1,0],
         3:[0.8,0.2,0],
         4:[0.7,0.3,0],
@@ -39,7 +39,7 @@ class Hog:
         for i in range(4):
             img = pygame.image.load(fr'resources\Warhog\hog{i}.png')
             img = pygame.transform.scale(img,
-                (img.get_width() // 0.7, img.get_height() // 0.7))
+                (img.get_width() // 0.5, img.get_height() // 0.5))
             cls.image1.append(img)
             cls.image1v.append(pygame.transform.flip(img, True, False))
 
@@ -48,7 +48,7 @@ class Hog:
         for i in range(4):
             img = pygame.image.load(fr'resources\hog2.png')
             img = pygame.transform.scale(img,
-                (img.get_width() // 20, img.get_height() // 20))
+                (img.get_width() // 17, img.get_height() // 17))
             cls.image2.append(img)
             cls.image2v.append(pygame.transform.flip(img, True, False))
 
@@ -62,13 +62,13 @@ class Hog:
         type = random.choices([0, 1, 2], weights=self.Hog_percentage[level])
         if type == [0]:
             self.image = 0
-            self.speed = 1
+            self.speed = 1.2
             self.health = 1
             self.cooldown = 0
             self.power = 1
         elif type == [1]:
             self.image = 1
-            self.speed = 1
+            self.speed = 1.8
             self.health = 11
             self.cooldown = 0
             self.power = 1
@@ -82,15 +82,30 @@ class Hog:
         
         x = random.randint(-600, 600)
         pos = mika_position + Vector2(x, int(math.sqrt(360000-x*x))*random.choice([-1,1]))
-        self.collider = CircleCollider(self, pos, 20)
+        self.collider = CircleCollider(self, pos, 30)
         self.sprite_clock = 0
         self.looking_left = False
+        self.dash_cooldown = 0
             
-    def update(self, mika_currentposition, space: PartitionedSpace):
+    def update(self, mika_currentposition: Vector2, space: PartitionedSpace):
+        dashing = False
+
+        if self.dash_cooldown != 0:
+            self.dash_cooldown -= 1
+
+        if self.image == 1:
+            d = mika_currentposition.distance_squared_to(self.collider.position)
+            if d < 40000 and self.dash_cooldown == 0:
+                dashing = True
+            if d < 4000:
+                self.dash_cooldown = 300
+                dashing = False
+
+
         new_pos = self.collider.position \
             + self.speed * Vector2.normalize(mika_currentposition - self.collider.position)
 
-        collision = space.do_collide(CircleCollider(self, new_pos, 100))
+        collision = space.do_collide(CircleCollider(self, new_pos, 60))
         
         if collision != None and type(collision.object) is Hog:
             distance_btw_colliding_hog = collision.position.distance_squared_to(self.collider.position)
@@ -98,13 +113,18 @@ class Hog:
                 opposite_direction = (self.collider.position - collision.position).normalize()
                 new_pos = self.collider.position + self.speed * opposite_direction
             else:
-                new_pos = self.collider.position
+                new_pos = self.collider.position + Vector2(1, 0)
+            self.dash_cooldown = 300
+            dashing = False
+
 
         if (not self.looking_left) and (mika_currentposition - self.collider.position).x < 0:
             self.looking_left = True
         elif self.looking_left and (mika_currentposition - self.collider.position).x > 0:
             self.looking_left = False
 
+        if dashing:
+            new_pos = (new_pos - self.collider.position) * 10 + self.collider.position
         space.move(self.collider, new_pos)
 
         self.sprite_clock += 1
