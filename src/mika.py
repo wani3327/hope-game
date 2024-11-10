@@ -110,19 +110,18 @@ class Mika:
         
     def try_level_up(self, get_exp_value: int, space: PartitionedSpace, orb_set: set[Drop]):
         self.exp += get_exp_value
+        items = []
         
         if self.level_exp[self.current_level-1] <= self.exp:
             self.current_level += 1
             self.exp = 0
-
-        items = []
-        for i in range(3):
-            r = random.randint(0, 2)
-            v = ['bow', 'fireball', 'lightning'][r]
-            item = Item(self.collider.position + Vector2(200 * i - 200, 200), v)
-            items.append(item)
-            orb_set.add(item)
-            space.add(item.collider)
+            for i in range(3):
+                r = random.randint(0, 2)
+                v = ['bow', 'fireball', 'lightning'][r]
+                item = Item(self.collider.position + Vector2(200 * i - 200, 200), v)
+                items.append(item)
+                orb_set.add(item)
+                space.add(item.collider)
 
         for i in items:
             i.friend = items
