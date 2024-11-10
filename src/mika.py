@@ -46,24 +46,23 @@ class Mika:
         movement = Vector2(0, 0)
 
         if pressed_keys[K_UP]:
-            movement += Vector2(0, -self.speed)
+            movement += Vector2(0, -1)
         if pressed_keys[K_DOWN]:
-            movement += Vector2(0, self.speed)
+            movement += Vector2(0, 1)
         if pressed_keys[K_LEFT]:
             if not self.looking_left:
                 self.looking_left = True
                 self.flip()
-            movement += Vector2(-self.speed, 0)
+            movement += Vector2(-1, 0)
         if pressed_keys[K_RIGHT]:
             if self.looking_left:
                 self.looking_left = False
                 self.flip()
-            movement += Vector2(self.speed, 0)
+            movement += Vector2(1, 0)
         
         if movement.length_squared() != 0:
             self.sprite_clock += 1
-
-        self.collider.position += movement
+            self.collider.position += self.speed * movement.normalize()
 
         
         

@@ -67,8 +67,8 @@ class App:
                 got_hit = self.hog_space.do_collide(l.collider)
                 if got_hit != None and type(got_hit.object) is Hog:
                     if got_hit.object.hit(l.damage): # it died
-                        self._kill_hog(got_hit.object, None, None)
-                        l.used = True
+                        self._kill_hog(got_hit.object, None)
+                    l.used = True
                             
         
         collides_with_mika = self.hog_space.do_collide(self._mika.collider)
@@ -125,7 +125,7 @@ class App:
 
                     if in_explosion != None and type(in_explosion.object) is Hog:
                         if in_explosion.object.hit(11):
-                            self._kill_hog(in_explosion.object, b, None)
+                            self._kill_hog(in_explosion.object, b)
                     else:
                         break
 
