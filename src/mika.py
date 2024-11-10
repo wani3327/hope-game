@@ -22,8 +22,8 @@ class Mika:
         
         self.speed = 0.5
         self.current_level = 1
-        self.weapon_level = [-1, -1, -1, -1] # Bullet Fireball Lightning Bat
-        self.cooldown = [[750,500,250],[3000,3000,3000],[5000,3000,3000],[3000,3000,3000]] # Bullet Fireball Lightning Bat
+        self.weapon_level = [-1, -1, 1, -1] # Bullet Fireball Lightning Bat
+        self.cooldown = [[750,500,250],[3000,3000,3000],[5000,1500,1500],[3000,3000,3000]] # Bullet Fireball Lightning Bat
         self.bullet_cooldown = 0
         self.fireball_cooldown = 0
         self.lightning_cooldown = 0
@@ -34,7 +34,7 @@ class Mika:
         self.bullet_cooldown = 0
         self.fireball_cooldown = 0
 
-    def update(self, bullets: set[Bullet], hog_list:set[Hog]):
+    def update(self, bullets: set[Bullet], lightnings:set[Lightning], hog_list:set[Hog]):
         pressed_keys = pygame.key.get_pressed()
         movement = Vector2(0, 0)
 
@@ -63,7 +63,8 @@ class Mika:
                     position = self.collider.position.copy()
                     b = Bullet(
                         position,
-                        (closest_hog.collider.position - self.collider.position).normalize())
+                        (closest_hog.collider.position - self.collider.position).normalize(),
+                        damage=6)
                     bullets.add(b)
                     self.bullet_cooldown = 750
             else:
@@ -72,7 +73,7 @@ class Mika:
         if self.weapon_level[1] >= 0:
             if self.fireball_cooldown == 0:
                 position = self.collider.position.copy()
-                f = Fireball(position)
+                f = Fireball(position,damage=11)
                 bullets.add(f)
                 self.fireball_cooldown = 750
             else:
@@ -80,8 +81,26 @@ class Mika:
     
         if self.weapon_level[2] >= 0:
             if self.lightning_cooldown == 0:
-                pass
-        
+                if len(hog_list) >= 1:
+                    if self.weapon_level[2] == 2 and len(hog_list) >=2 :
+                        hog_lightning_list = random.sample(list(hog_list))
+                        position = hog_lightning_list[0].collider.position.copy()
+                        l = Lightning(position,damage=20)
+                        lightnings.add(l)
+                        position = hog_lightning_list[1].collider.position.copy()
+                        l = Lightning(position,damage=20)
+                        lightnings.add(l)
+                        self.lightning_cooldown = self.cooldown[2][self.weapon_level[2]]
+                    else:
+                        hog_lightning_list = random.choice(list(hog_list))
+                        position = hog_lightning_list.collider.position.copy()
+                        l = Lightning(position,damage=20)
+                        lightnings.add(l)
+                        self.lightning_cooldown = self.cooldown[2][self.weapon_level[2]]
+            else:
+                self.lightning_cooldown -= 1
+                
+
         
         
     def try_level_up(self, get_exp_value: int, space: PartitionedSpace, orb_set: set[Drop]):
