@@ -26,20 +26,33 @@ class Hog:
         13:[0.1,0.4,0.5],
         14:[0,0.4,0.6]
     }
-    image1 = pygame.image.load(r'resources\hog.png')
+    image1: list[pygame.surface.Surface] = []
+    image1v: list[pygame.surface.Surface] = []
     size1 = Vector2(1, 1)
-    image2 = pygame.image.load(r'resources\hog2.png')
+    image2: list[pygame.surface.Surface] = []
+    image2v: list[pygame.surface.Surface] = []
     size2 = Vector2(1, 1)
     is_setup = False
 
     @classmethod
     def setup(cls):
-        cls.image1 = pygame.transform.scale(cls.image1,
-            (cls.image1.get_width() // 20, cls.image1.get_height() // 20))
-        cls.size1 = Vector2(cls.image1.get_width(), cls.image1.get_height())
-        cls.image2 = pygame.transform.scale(cls.image2,
-            (cls.image2.get_width() // 20, cls.image2.get_height() // 20))
-        cls.size2 = Vector2(cls.image2.get_width(), cls.image2.get_height())
+        for i in range(4):
+            img = pygame.image.load(fr'resources\Warhog\hog{i}.png')
+            img = pygame.transform.scale(img,
+                (img.get_width() // 0.7, img.get_height() // 0.7))
+            cls.image1.append(img)
+            cls.image1v.append(pygame.transform.flip(img, True, False))
+
+        cls.size1 = Vector2(cls.image1[0].get_width(), cls.image1[0].get_height())
+
+        for i in range(4):
+            img = pygame.image.load(fr'resources\hog2.png')
+            img = pygame.transform.scale(img,
+                (img.get_width() // 20, img.get_height() // 20))
+            cls.image2.append(img)
+            cls.image2v.append(pygame.transform.flip(img, True, False))
+
+        cls.size2 = Vector2(cls.image2[0].get_width(), cls.image2[0].get_height())
 
     def __init__(self, level, mika_position):
         if not Hog.is_setup:
@@ -70,6 +83,8 @@ class Hog:
         x = random.randint(-600, 600)
         pos = mika_position + Vector2(x, int(math.sqrt(360000-x*x))*random.choice([-1,1]))
         self.collider = CircleCollider(self, pos, 20)
+        self.sprite_clock = 0
+        self.looking_left = False
             
     def update(self, mika_currentposition, space: PartitionedSpace):
         new_pos = self.collider.position \
@@ -81,28 +96,47 @@ class Hog:
             distance_btw_colliding_hog = collision.position.distance_squared_to(self.collider.position)
             if 0 < distance_btw_colliding_hog:
                 opposite_direction = (self.collider.position - collision.position).normalize()
-                other_pos = self.collider.position + self.speed * opposite_direction
-                space.move(self.collider, other_pos)
-        else:
-            space.move(self.collider, new_pos)
+                new_pos = self.collider.position + self.speed * opposite_direction
+            else:
+                new_pos = self.collider.position
 
+        if (not self.looking_left) and (mika_currentposition - self.collider.position).x < 0:
+            self.looking_left = True
+        elif self.looking_left and (mika_currentposition - self.collider.position).x > 0:
+            self.looking_left = False
+
+        space.move(self.collider, new_pos)
+
+        self.sprite_clock += 1
         if self.cooldown != 0:
             self.cooldown -= 1
  
     def draw(self, surface, camera):
+        index = (self.sprite_clock // 15) % 4
+        sprites = None
+        size = Vector2(1, 1)
 
         if self.image == 0:
-            surface.blit(
-                Hog.image1, 
-                get_offset_camera(self.collider.position, camera, Hog.size1))
+            size = self.size1
+            if self.looking_left:
+                sprites = Hog.image1v
+            else:
+                sprites = Hog.image1
         else:
-            surface.blit(
-                Hog.image2,
-                get_offset_camera(self.collider.position, camera, Hog.size2))
+            size = self.size2
+            if self.looking_left:
+                sprites = Hog.image2v
+            else:
+                sprites = Hog.image2
+
+        surface.blit(
+            sprites[index],
+            get_offset_camera(self.collider.position, camera, size))
         
 
     def hit(self, amount) -> bool:
         self.health -= amount
+        print(f'hog hurts {amount} => {self.health}')
         return self.health <= 0
     
     def attack(self) -> float:
