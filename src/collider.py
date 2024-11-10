@@ -50,6 +50,7 @@ class PartitionedSpace:
                         continue
 
                     res.append(c)
+                    return res
             
         return res
 

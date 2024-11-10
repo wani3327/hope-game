@@ -52,9 +52,6 @@ class Hog:
         x = random.randint(-600, 600)
         pos = mika_position + Vector2(x, int(math.sqrt(360000-x*x))*random.choice([-1,1]))
         self.collider = CircleCollider(self, pos, 20)
-        self.mika_position = mika_position
-            
-            # status
             
     def update(self, mika_currentposition, space: PartitionedSpace):
         space.move(self.collider, 
