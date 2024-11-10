@@ -2,6 +2,7 @@ import pygame
 import random
 from pygame.math import Vector2
 from helper import *
+import math
 
 from pygame.locals import *
 from collider import CircleCollider, PartitionedSpace
@@ -48,7 +49,8 @@ class Hog:
 
         self.image = pygame.transform.scale(self.image, (self.image.get_width()//20, self.image.get_height()//20))
         self.size = Vector2(self.image.get_width(), self.image.get_height())
-        pos = Vector2(random.randint(0, 600), random.randint(0, 300))
+        x = random.randint(-600, 600)
+        pos = mika_position + Vector2(x, int(math.sqrt(360000-x*x))*random.choice([-1,1]))
         self.collider = CircleCollider(self, pos, 20)
         self.mika_position = mika_position
             

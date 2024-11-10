@@ -22,7 +22,7 @@ class Mika:
         
         self.speed = 0.5
         self.current_level = 1
-        self.weapon_level = [-1, -1, 1, -1] # Bullet Fireball Lightning Bat
+        self.weapon_level = [1, 1, 1, 1] # Bullet Fireball Lightning Bat
         self.cooldown = [[750,500,250],[3000,3000,3000],[5000,1500,1500],[3000,3000,3000]] # Bullet Fireball Lightning Bat
         self.bullet_cooldown = 0
         self.fireball_cooldown = 0
@@ -39,13 +39,13 @@ class Mika:
         movement = Vector2(0, 0)
 
         if pressed_keys[K_UP]:
-            movement = Vector2(0, -self.speed)
+            movement += Vector2(0, -self.speed)
         if pressed_keys[K_DOWN]:
-            movement = Vector2(0, self.speed)
+            movement += Vector2(0, self.speed)
         if pressed_keys[K_LEFT]:
-            movement = Vector2(-self.speed, 0)
+            movement += Vector2(-self.speed, 0)
         if pressed_keys[K_RIGHT]:
-            movement = Vector2(self.speed, 0)
+            movement += Vector2(self.speed, 0)
         
         self.collider.position += movement
 
@@ -66,7 +66,7 @@ class Mika:
                         (closest_hog.collider.position - self.collider.position).normalize(),
                         damage=6)
                     bullets.add(b)
-                    self.bullet_cooldown = 750
+                    self.bullet_cooldown = self.cooldown[0][self.weapon_level[0]]
             else:
                 self.bullet_cooldown -= 1
         

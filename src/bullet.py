@@ -2,7 +2,8 @@ import pygame
 from pygame.math import Vector2
 from helper import *
 from collider import CircleCollider, PartitionedSpace
-
+import math
+import random
 
 class Bullet:
     def __init__(self, initial_position: Vector2, direction: Vector2, damage):
@@ -22,20 +23,9 @@ class Bullet:
         # space.move(self.collider, self.collider.position + self.speed * self.direction)
         self.lifetime -= 1
 
-        if self.lifetime == 0:
-            # we will take care of this situation in App
-            pass
-
     def draw(self, surface, camera: Vector2):
         surface.blit(self.image, get_offset_camera(self.collider.position, camera, self.size))
 
-import pygame
-from pygame.math import Vector2
-from helper import *
-from collider import CircleCollider, PartitionedSpace
-import math
-import random
-from bullet import Bullet
 
 class Fireball(Bullet):
     def __init__(self, initial_position: Vector2, damage):
@@ -50,13 +40,10 @@ class Fireball(Bullet):
         self.lifetime = 300
         self.damage = damage
     
-    def update(self, space: PartitionedSpace):
-        space.move(self.collider, self.collider.position + self.speed * self.direction)
+    def update(self):#, space: PartitionedSpace):
+        self.collider.position = self.collider.position + self.speed * self.direction
+        # space.move(self.collider, self.collider.position + self.speed * self.direction)
         self.lifetime -= 1
-
-        if self.lifetime == 0:
-            # we will take care of this situation in App
-            pass
 
 class Lightning(Bullet):
     def __init__(self, initial_position: Vector2, damage):
